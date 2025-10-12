@@ -1,0 +1,128 @@
+/* 🌐 Global Form Styles - Transparent Inputs with Visible Borders */
+
+/* 🔹 All inputs, selects, and textareas */
+.subtle-border,
+.form-control,
+.form-select {
+  border: 1.5px solid rgba(0, 0, 0, 0.25) !important; /* visible border */
+  border-radius: 8px !important;
+  background-color: transparent !important; /* transparent background */
+  color: #222 !important;
+  box-shadow: none !important;
+  padding: 0.6rem 0.75rem;
+  width: 100%;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s;
+}
+
+/* 🔹 Focused inputs */
+.subtle-border:focus,
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd !important; /* focus border */
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15) !important; /* subtle glow */
+  outline: none !important;
+  background-color: transparent !important; /* keep transparent */
+}
+
+/* 🔹 Disabled inputs */
+.form-control:disabled,
+.form-select:disabled {
+  background-color: transparent !important; /* transparent disabled */
+  color: #666 !important;
+  border-color: #ccc !important;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* 🔹 Textarea adjustments */
+textarea.form-control {
+  resize: vertical !important;
+  min-height: 100px;
+}
+
+/* 🔹 Labels */
+.form-label {
+  color: #222;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+/* 🔹 Hover effect */
+.subtle-border:hover,
+.form-control:hover,
+.form-select:hover {
+  border-color: rgba(13, 110, 253, 0.6) !important;
+}
+
+/* 🔹 Form container responsiveness */
+.container-fluid {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 0.95rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* 🔹 Leaflet map responsiveness */
+.leaflet-container {
+  width: 100% !important;
+  height: 300px !important;
+  border-radius: 10px !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .leaflet-container {
+    height: 250px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaflet-container {
+    height: 220px !important;
+  }
+}
+
+/* 🔹 Success and error alerts */
+.alert {
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔹 Submit button */
+button.btn-primary {
+  background-color: #0d6efd !important;
+  border: none !important;
+  transition: all 0.2s ease-in-out;
+}
+
+button.btn-primary:hover {
+  background-color: #0b5ed7 !important;
+  transform: scale(1.02);
+}
