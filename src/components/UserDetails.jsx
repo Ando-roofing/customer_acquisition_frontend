@@ -1,6 +1,6 @@
 // src/pages/users/UserDetail.jsx
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import {
   FaUser,
@@ -11,16 +11,14 @@ import {
   FaMapMarkerAlt,
   FaNetworkWired,
 } from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function UserDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const token = localStorage.getItem("accessToken");
-
   const [user, setUser] = useState(null);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,7 +30,6 @@ export default function UserDetail() {
         setUser(res.data);
       } catch (err) {
         console.error("Failed to fetch user details:", err);
-        setError("Failed to fetch user details.");
       } finally {
         setLoading(false);
       }
@@ -53,69 +50,65 @@ export default function UserDetail() {
     fetchBranches();
   }, [id, token]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-danger">{error}</p>;
-  if (!user) return <p>No user found</p>;
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
-  // Get branch name
+  if (!user) {
+    return (
+      <div className="container mt-5 text-center">
+        <h5 className="text-danger">User not found.</h5>
+        <Link to="/users" className="btn btn-secondary mt-3">
+          Back to Users
+        </Link>
+      </div>
+    );
+  }
+
   const branchName = branches.find((b) => b.id === user.branch)?.name || "N/A";
 
+  const renderField = (label, value, icon = null) =>
+    value ? (
+      <p className="mb-1">
+        {icon && <span className="me-1">{icon}</span>}
+        <strong>{label}:</strong> {value}
+      </p>
+    ) : null;
+
   return (
-    <div className="container-fluid mt-4">
-      <div className="row">
-        <div className="col-md-10">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h3 className="card-title mb-4">User Details</h3>
+    <div className="container py-3" style={{ maxWidth: "95%" }}>
+      <div
+        className="border rounded-4 shadow-sm p-4"
+        style={{ background: "transparent", border: "1px solid #ddd" }}
+      >
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="fw-bold mb-0">
+            <FaUser className="me-2" /> User Details
+          </h4>
+          <Link to="/users" className="btn btn-outline-secondary btn-sm">
+            <i className="bi bi-arrow-left"></i> Back
+          </Link>
+        </div>
 
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <strong><FaUser /> First Name:</strong>
-                  <p>{user.first_name}</p>
-                </div>
-                <div className="col-md-6">
-                  <strong><FaUser /> Last Name:</strong>
-                  <p>{user.last_name}</p>
-                </div>
-              </div>
+        <div className="row g-4">
+          <div className="col-md-6">
+            {renderField("First Name", user.first_name, <FaUser />)}
+            {renderField("Last Name", user.last_name, <FaUser />)}
+            {renderField("Email", user.email, <FaEnvelope />)}
+            {renderField("Contact", user.contact, <FaPhone />)}
+          </div>
 
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <strong><FaEnvelope /> Email:</strong>
-                  <p>{user.email}</p>
-                </div>
-                <div className="col-md-6">
-                  <strong><FaPhone /> Contact:</strong>
-                  <p>{user.contact}</p>
-                </div>
-              </div>
-
-              <div className="row mb-3">
-                <div className="col-md-3">
-                  <strong><FaBuilding /> Company:</strong>
-                  <p>{user.company_name}</p>
-                </div>
-                <div className="col-md-3">
-                  <strong><FaBriefcase /> Position:</strong>
-                  <p>{user.position}</p>
-                </div>
-                <div className="col-md-3">
-                  <strong><FaMapMarkerAlt /> Zone:</strong>
-                  <p>{user.zone}</p>
-                </div>
-                <div className="col-md-3">
-                  <strong><FaNetworkWired /> Branch:</strong>
-                  <p>{branchName}</p>
-                </div>
-              </div>
-
-              <button
-                className="btn btn-secondary"
-                onClick={() => navigate(-1)}
-              >
-                Back
-              </button>
-            </div>
+          <div className="col-md-6">
+            {renderField("Company", user.company_name, <FaBuilding />)}
+            {renderField("Position", user.position, <FaBriefcase />)}
+            {renderField("Zone", user.zone, <FaMapMarkerAlt />)}
+            {renderField("Branch", branchName, <FaNetworkWired />)}
           </div>
         </div>
       </div>

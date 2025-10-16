@@ -19,7 +19,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter }) {
         />
       </div>
       <Link to="/add-customers" className="btn btn-success">
-        Add Customer
+        <i className="bi bi-plus-circle me-1"></i> Add Customer
       </Link>
     </div>
   );
@@ -59,12 +59,21 @@ export default function Customers() {
     }
   };
 
-  // Table columns (only desired fields)
+  // Table columns (with red badge for missing designation)
   const columns = React.useMemo(
     () => [
       { Header: "#", Cell: ({ row }) => row.index + 1 },
       { Header: "Company Name", accessor: "company_name" },
-      { Header: "Designation", accessor: "designation" },
+      {
+        Header: "Designation",
+        accessor: "designation",
+        Cell: ({ value }) =>
+          value ? (
+            value
+          ) : (
+            <span className="badge bg-danger text-white">No Designation</span>
+          ),
+      },
       { Header: "Email", accessor: "email" },
       {
         Header: "Created At",

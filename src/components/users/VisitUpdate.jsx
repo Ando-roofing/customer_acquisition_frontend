@@ -13,7 +13,7 @@ import {
   FaBoxes,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../styles/AddVisit.css"; // ✅ Use same styles as AddVisit
+import "../../styles/AddVisit.css";
 
 // Fix Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -43,7 +43,24 @@ export default function VisitUpdate() {
     product_interests: [],
   });
 
-  // Fetch visit + products
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProducts = products.filter((p) =>
+    (p.product_name || p.name || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  const toggleProduct = (productId) => {
+    setFormData((prev) => {
+      const exists = prev.product_interests.includes(productId);
+      const updated = exists
+        ? prev.product_interests.filter((id) => id !== productId)
+        : [...prev.product_interests, productId];
+      return { ...prev, product_interests: updated };
+    });
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,7 +78,9 @@ export default function VisitUpdate() {
         const productList = productsRes.data.results || productsRes.data || [];
         setProducts(productList);
 
-        const selectedProducts = data.products_interested?.map(p => Number(p.id)) || [];
+        const selectedProducts = data.products_interested?.map(
+          (p) => Number(p.id)
+        ) || [];
 
         setFormData({
           item_discussed: "",
@@ -80,7 +99,6 @@ export default function VisitUpdate() {
     fetchData();
   }, [id, token]);
 
-  // Auto-detect location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -96,7 +114,6 @@ export default function VisitUpdate() {
     }
   }, []);
 
-  // Map click handler
   const LocationMarker = () => {
     useMapEvents({
       click(e) {
@@ -121,11 +138,6 @@ export default function VisitUpdate() {
     setFormData((prev) => ({ ...prev, visit_image: e.target.files[0] }));
   };
 
-  const handleProductSelect = (e) => {
-    const selected = Array.from(e.target.selectedOptions, (opt) => Number(opt.value));
-    setFormData((prev) => ({ ...prev, product_interests: selected }));
-  };
-
   const handleSubmit = async () => {
     const payload = new FormData();
     payload.append("item_discussed", formData.item_discussed);
@@ -133,13 +145,20 @@ export default function VisitUpdate() {
     payload.append("longitude", formData.longitude);
     if (formData.visit_image) payload.append("visit_image", formData.visit_image);
     if (formData.client_budget) payload.append("client_budget", formData.client_budget);
-    formData.product_interests.forEach((pid) => payload.append("product_interests", pid));
+    formData.product_interests.forEach((pid) =>
+      payload.append("product_interests", pid)
+    );
 
     try {
       await axios.patch(
         `http://127.0.0.1:8000/visits/visit-update/${id}/update/`,
         payload,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       alert("Visit updated successfully!");
       navigate("/visit-lists");
@@ -160,7 +179,9 @@ export default function VisitUpdate() {
     return (
       <div className="container mt-5 text-center">
         <h5 className="text-danger">Visit not found.</h5>
-        <Link to="/visit-lists" className="btn btn-secondary mt-3">Back to Visits</Link>
+        <Link to="/visit-lists" className="btn btn-secondary mt-3">
+          Back to Visits
+        </Link>
       </div>
     );
 
@@ -175,7 +196,6 @@ export default function VisitUpdate() {
         </h3>
 
         <div className="card-body p-0">
-          {/* Company */}
           <div className="mb-3">
             <label className="form-label fw-semibold">Company Name</label>
             <input
@@ -186,7 +206,6 @@ export default function VisitUpdate() {
             />
           </div>
 
-          {/* Item Discussed */}
           <div className="mb-3">
             <label className="form-label fw-semibold">Item Discussed</label>
             <textarea
@@ -199,7 +218,6 @@ export default function VisitUpdate() {
             ></textarea>
           </div>
 
-          {/* Map */}
           <div className="mb-3">
             <label className="form-label fw-semibold">Select Location</label>
             <div className="rounded-4 overflow-hidden subtle-border">
@@ -219,7 +237,6 @@ export default function VisitUpdate() {
             )}
           </div>
 
-          {/* Visit Image */}
           <div className="mb-3">
             <label className="form-label fw-semibold">
               <FaImage className="me-2 text-secondary" /> Visit Image
@@ -231,16 +248,13 @@ export default function VisitUpdate() {
             />
           </div>
 
-          {/* Qualifying Fields */}
           {showQualifyingFields && (
             <div className="border rounded p-3 mt-3 bg-light">
               <h6 className="fw-bold text-primary d-flex align-items-center">
                 <FaDollarSign className="me-2" /> Client Budget & Products
               </h6>
               <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  Client Budget
-                </label>
+                <label className="form-label fw-semibold">Client Budget</label>
                 <input
                   type="number"
                   className="form-control subtle-border"
@@ -249,29 +263,81 @@ export default function VisitUpdate() {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* ✅ Simplified Multi-Product Selector */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  Products Interested
+                  <FaBoxes className="me-2 text-secondary" /> Products Interested
                 </label>
-                <select
-                  multiple
-                  className="form-select subtle-border"
-                  value={formData.product_interests}
-                  onChange={handleProductSelect}
+
+                <input
+                  type="text"
+                  className="form-control mb-2 subtle-border"
+                  placeholder="Search products..."
+                  onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+                />
+
+                <div
+                  className="border rounded p-2"
+                  style={{
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    backgroundColor: "white",
+                  }}
                 >
-                  {products.length > 0
-                    ? products.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.product_name || p.name}
-                        </option>
-                      ))
-                    : <option disabled>No products found</option>}
-                </select>
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((p) => {
+                      const isSelected = formData.product_interests.includes(p.id);
+                      return (
+                        <div
+                          key={p.id}
+                          className="d-flex align-items-center justify-content-between border-bottom py-1"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => toggleProduct(p.id)}
+                        >
+                          <span>{p.product_name || p.name}</span>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            readOnly
+                            style={{ cursor: "pointer" }}
+                          />
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-muted small">
+                      No products match your search.
+                    </div>
+                  )}
+                </div>
+
+                {formData.product_interests.length > 0 && (
+                  <div className="mt-2 d-flex flex-wrap gap-2">
+                    {formData.product_interests.map((pid) => {
+                      const product = products.find((p) => p.id === pid);
+                      return (
+                        <span
+                          key={pid}
+                          className="badge bg-primary-subtle text-primary border rounded-pill px-3 py-2"
+                          style={{ fontSize: "0.9rem" }}
+                        >
+                          {product?.product_name || product?.name || "Unknown"}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-sm ms-2"
+                            aria-label="Remove"
+                            onClick={() => toggleProduct(pid)}
+                          ></button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Buttons */}
           <div className="mt-4 text-end d-flex gap-2 flex-wrap justify-content-end">
             <button
               className="btn btn-secondary btn-sm"

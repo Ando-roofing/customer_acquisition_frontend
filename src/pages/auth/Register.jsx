@@ -11,6 +11,7 @@ import {
   FaMapMarkerAlt,
   FaNetworkWired,
 } from "react-icons/fa";
+import "../../styles/AddVisit.css"; // ✅ Use same shared style
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -30,13 +31,11 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [error, setError] = useState(null);
-
-  const token = localStorage.getItem("accessToken"); // admin token
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     const fetchBranches = async () => {
       if (!token) return console.error("No token found. Login required to fetch branches.");
-
       try {
         const res = await axios.get("http://127.0.0.1:8000/accounts/branches/", {
           headers: { Authorization: `Bearer ${token}` },
@@ -69,7 +68,7 @@ export default function Register() {
       await axios.post("http://127.0.0.1:8000/accounts/register/", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccessMessage("User registered successfully!");
+      setSuccessMessage("✅ User registered successfully!");
       setFormData({
         first_name: "",
         last_name: "",
@@ -87,7 +86,7 @@ export default function Register() {
         const firstErrorField = Object.keys(err.response.data)[0];
         setError(err.response.data[firstErrorField][0]);
       } else {
-        setError("Registration failed. Try again.");
+        setError("❌ Registration failed. Try again.");
       }
     } finally {
       setIsLoading(false);
@@ -95,186 +94,212 @@ export default function Register() {
   };
 
   return (
-    <div className="container-fluid mt-4">
-      <div className="row">
-        {/* Assuming your sidebar is col-md-2 */}
-        <div className="col-md-10">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h3 className="card-title mb-4">Register New User</h3>
+    <div className="container-fluid py-3">
+      {/* ✅ Match AddVisit / AddCustomer look */}
+      <div
+        className="p-4 rounded-4 shadow-sm bg-transparent"
+        style={{ maxWidth: "650px", marginLeft: "20px" }}
+      >
+        <h3 className="text-primary mb-4 fw-bold d-flex align-items-center">
+          <FaUser className="me-2" /> Register New User
+        </h3>
 
-              {error && <div className="alert alert-danger">{error}</div>}
-              {successMessage && <div className="alert alert-success">{successMessage}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
+        {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
-              <form onSubmit={handleSubmit}>
-                {/* Name Fields in one row */}
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label"><FaUser /> First Name</label>
-                    <input
-                      type="text"
-                      name="first_name"
-                      value={formData.first_name}
-                      onChange={handleChange}
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label"><FaUser /> Last Name</label>
-                    <input
-                      type="text"
-                      name="last_name"
-                      value={formData.last_name}
-                      onChange={handleChange}
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Email and Contact in one row */}
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label"><FaEnvelope /> Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label"><FaPhone /> Contact</label>
-                    <input
-                      type="text"
-                      name="contact"
-                      value={formData.contact}
-                      onChange={handleChange}
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Passwords in one row */}
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label className="form-label"><FaLock /> Password</label>
-                    <input
-                      type="password"
-                      name="password1"
-                      value={formData.password1}
-                      onChange={handleChange}
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label"><FaLock /> Confirm Password</label>
-                    <input
-                      type="password"
-                      name="password2"
-                      value={formData.password2}
-                      onChange={handleChange}
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Company, Position, Zone, Branch in one row */}
-                <div className="row mb-3">
-                  <div className="col-md-3">
-                    <label className="form-label"><FaBuilding /> Company</label>
-                    <select
-                      name="company_name"
-                      value={formData.company_name}
-                      onChange={handleChange}
-                      className="form-select"
-                      required
-                    >
-                      <option value="">Select Company</option>
-                      <option value="ANDO">ANDO</option>
-                      <option value="KAM">KAM</option>
-                      <option value="MATE">MATE</option>
-                    </select>
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label"><FaBriefcase /> Position</label>
-                    <select
-                      name="position"
-                      value={formData.position}
-                      onChange={handleChange}
-                      className="form-select"
-                      required
-                    >
-                      {[
-                        "Head of Sales",
-                        "Facilitator",
-                        "Product Brand Manager",
-                        "Corporate Manager",
-                        "Corporate Officer",
-                        "Zonal Sales Executive",
-                        "Mobile Sales Officer",
-                        "Desk Sales Officer",
-                        "Admin",
-                      ].map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label"><FaMapMarkerAlt /> Zone</label>
-                    <select
-                      name="zone"
-                      value={formData.zone}
-                      onChange={handleChange}
-                      className="form-select"
-                      required
-                    >
-                      {[
-                        "Coast Zone",
-                        "Corporate",
-                        "Central Zone",
-                        "Southern Zone",
-                        "Northern Zone",
-                        "Lake Zone",
-                      ].map((z) => (
-                        <option key={z} value={z}>{z}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label"><FaNetworkWired /> Branch</label>
-                    <select
-                      name="branch"
-                      value={formData.branch}
-                      onChange={handleChange}
-                      className="form-select"
-                      required
-                    >
-                      <option value="">Select Branch</option>
-                      {branches.map((b) => (
-                        <option key={b.id} value={b.id}>{b.name || "Unnamed Branch"}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Registering..." : "Register"}
-                </button>
-              </form>
-            </div>
+        <form onSubmit={handleSubmit}>
+          {/* First and Last Name */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaUser className="me-2" /> First Name
+            </label>
+            <input
+              type="text"
+              name="first_name"
+              className="form-control subtle-border mb-2"
+              value={formData.first_name}
+              onChange={handleChange}
+              placeholder="Enter first name"
+              required
+            />
+            <input
+              type="text"
+              name="last_name"
+              className="form-control subtle-border"
+              value={formData.last_name}
+              onChange={handleChange}
+              placeholder="Enter last name"
+              required
+            />
           </div>
-        </div>
+
+          {/* Email */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaEnvelope className="me-2" /> Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              className="form-control subtle-border"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter email"
+              required
+            />
+          </div>
+
+          {/* Contact */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaPhone className="me-2" /> Contact
+            </label>
+            <input
+              type="text"
+              name="contact"
+              className="form-control subtle-border"
+              value={formData.contact}
+              onChange={handleChange}
+              placeholder="Enter contact number"
+              required
+            />
+          </div>
+
+          {/* Passwords */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaLock className="me-2" /> Password
+            </label>
+            <input
+              type="password"
+              name="password1"
+              className="form-control subtle-border mb-2"
+              value={formData.password1}
+              onChange={handleChange}
+              placeholder="Enter password"
+              required
+            />
+            <input
+              type="password"
+              name="password2"
+              className="form-control subtle-border"
+              value={formData.password2}
+              onChange={handleChange}
+              placeholder="Confirm password"
+              required
+            />
+          </div>
+
+          {/* Company */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaBuilding className="me-2" /> Company
+            </label>
+            <select
+              name="company_name"
+              className="form-select subtle-border"
+              value={formData.company_name}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Company</option>
+              <option value="ANDO">ANDO</option>
+              <option value="KAM">KAM</option>
+              <option value="MATE">MATE</option>
+            </select>
+          </div>
+
+          {/* Position */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaBriefcase className="me-2" /> Position
+            </label>
+            <select
+              name="position"
+              className="form-select subtle-border"
+              value={formData.position}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Position</option>
+              {[
+                "Head of Sales",
+                "Facilitator",
+                "Product Brand Manager",
+                "Corporate Manager",
+                "Corporate Officer",
+                "Zonal Sales Executive",
+                "Mobile Sales Officer",
+                "Desk Sales Officer",
+                "Admin",
+              ].map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Zone */}
+          <div className="mb-3">
+            <label className="form-label fw-semibold">
+              <FaMapMarkerAlt className="me-2" /> Zone
+            </label>
+            <select
+              name="zone"
+              className="form-select subtle-border"
+              value={formData.zone}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Zone</option>
+              {[
+                "Coast Zone",
+                "Corporate",
+                "Central Zone",
+                "Southern Zone",
+                "Northern Zone",
+                "Lake Zone",
+              ].map((z) => (
+                <option key={z} value={z}>
+                  {z}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Branch */}
+          <div className="mb-4">
+            <label className="form-label fw-semibold">
+              <FaNetworkWired className="me-2" /> Branch
+            </label>
+            <select
+              name="branch"
+              className="form-select subtle-border"
+              value={formData.branch}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Branch</option>
+              {branches.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name || "Unnamed Branch"}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Submit Button */}
+          <div className="text-start">
+            <button
+              type="submit"
+              className="btn btn-primary px-3 fw-semibold rounded-3"
+              disabled={isLoading}
+            >
+              {isLoading ? "Registering..." : "Register"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

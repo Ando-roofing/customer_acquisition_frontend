@@ -105,7 +105,7 @@ function UserSidebar() {
 
             {/* Regular Links */}
             <li className="nav-item">
-              <Link to="/" className="nav-link text-white d-flex align-items-center">
+              <Link to="/add_visit" className="nav-link text-white d-flex align-items-center">
                 <i className="fas fa-home me-2"></i> Home
               </Link>
             </li>

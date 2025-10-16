@@ -6,6 +6,7 @@ import "../../styles/AddVisit.css"; // Use same styles as AddVisit
 
 export default function AddCustomer() {
   const [companyName, setCompanyName] = useState("");
+  const [customerType, setCustomerType] = useState("Company"); // Default to Company
   const [designation, setDesignation] = useState("");
   const [location, setLocation] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +31,8 @@ export default function AddCustomer() {
 
     const payload = {
       company_name: companyName,
-      designation,
+      customer_type: customerType,
+      designation: customerType === "Company" ? designation : "", // Only include if Company
       location,
       email,
       contacts: contacts.filter((c) => c.contact_name && c.contact_detail),
@@ -43,6 +45,7 @@ export default function AddCustomer() {
 
       setMessage({ type: "success", text: "✅ Customer added successfully!" });
       setCompanyName("");
+      setCustomerType("Company");
       setDesignation("");
       setLocation("");
       setEmail("");
@@ -61,8 +64,10 @@ export default function AddCustomer() {
 
   return (
     <div className="container-fluid py-3">
-      {/* Align closer to sidebar */}
-      <div className="p-4 rounded-4 shadow-sm bg-transparent" style={{ maxWidth: "600px", marginLeft: "20px" }}>
+      <div
+        className="p-4 rounded-4 shadow-sm bg-transparent"
+        style={{ maxWidth: "600px", marginLeft: "20px" }}
+      >
         <h3 className="text-primary mb-4 fw-bold d-flex align-items-center">
           <i className="fas fa-user-plus me-2"></i> Add New Customer
         </h3>
@@ -77,7 +82,7 @@ export default function AddCustomer() {
           {/* Company Name */}
           <div className="mb-3">
             <label className="form-label fw-semibold">
-              <i className="fas fa-building me-2"></i> Company Name
+              <i className="fas fa-building me-2"></i>Customer Name
             </label>
             <input
               type="text"
@@ -89,23 +94,41 @@ export default function AddCustomer() {
             />
           </div>
 
-          {/* Designation */}
+          {/* Customer Type */}
           <div className="mb-3">
             <label className="form-label fw-semibold">
-              <i className="fas fa-id-badge me-2"></i> Designation
+              <i className="fas fa-users me-2"></i> Customer Type
             </label>
             <select
               className="form-select subtle-border"
-              value={designation}
-              onChange={(e) => setDesignation(e.target.value)}
+              value={customerType}
+              onChange={(e) => setCustomerType(e.target.value)}
               required
             >
-              <option value="">Select Designation</option>
-              <option value="Owner">Owner</option>
-              <option value="Engineer">Engineer</option>
-              <option value="Contractor">Contractor</option>
+              <option value="Individual">Individual</option>
+              <option value="Company">Company</option>
             </select>
           </div>
+
+          {/* Designation (Only visible for Company) */}
+          {customerType === "Company" && (
+            <div className="mb-3">
+              <label className="form-label fw-semibold">
+                <i className="fas fa-id-badge me-2"></i> Designation
+              </label>
+              <select
+                className="form-select subtle-border"
+                value={designation}
+                onChange={(e) => setDesignation(e.target.value)}
+                required={customerType === "Company"}
+              >
+                <option value="">Select Designation</option>
+                <option value="Owner">Owner</option>
+                <option value="Engineer">Engineer</option>
+                <option value="Contractor">Contractor</option>
+              </select>
+            </div>
+          )}
 
           {/* Location */}
           <div className="mb-3">
@@ -136,7 +159,7 @@ export default function AddCustomer() {
             />
           </div>
 
-          {/* Contacts Section */}
+          {/* Contacts */}
           <h5 className="mt-4 mb-3 fw-semibold">
             <i className="fas fa-address-book me-2"></i> Contacts
           </h5>

@@ -53,7 +53,7 @@ export default function VisitDetails() {
       ? `https://www.google.com/maps?q=${visit.latitude},${visit.longitude}`
       : null;
 
-  // Helper function to render only if value exists
+  // Helper to conditionally render fields
   const renderField = (label, value) =>
     value ? (
       <p className="mb-1">
@@ -62,113 +62,134 @@ export default function VisitDetails() {
     ) : null;
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow-lg border-0 rounded-4">
-        <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-          <h4 className="mb-0">
-            <i className="bi bi-info-circle me-2"></i> Visit Details
+    <div className="container py-3" style={{ maxWidth: "95%" }}>
+      <div
+        className="border rounded-4 shadow-sm p-4"
+        style={{
+          background: "transparent",
+          border: "1px solid #ddd",
+        }}
+      >
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="fw-bold mb-0">
+            <i className="bi bi-info-circle me-2"></i>Visit Details
           </h4>
-          <Link to="/visits" className="btn btn-light btn-sm">
+          <Link to="/visits" className="btn btn-outline-secondary btn-sm">
             <i className="bi bi-arrow-left"></i> Back
           </Link>
         </div>
 
-        <div className="card-body p-4">
-          <div className="row mb-3">
-            <div className="col-md-6">
-              {visit.company_name && (
-                <h5 className="fw-bold text-primary">Company Name : {visit.company_name}</h5>
-              )}
-              {renderField("Designation", visit.designation)}
-              {renderField("Acquisition Stage", visit.acquisition_stage)}
-              {renderField("Client Budget", visit.client_budget)}
-
-              {visit.products_interested?.length > 0 &&
-                renderField(
-                  "Products Interested",
-                  visit.products_interested.join(", ")
-                )}
-            </div>
-
-            <div className="col-md-6">
-              {(visit.contact_person_name || visit.contact_person_detail) && (
-                <h6 className="fw-bold text-secondary">Contact Person</h6>
-              )}
-              {renderField("Name", visit.contact_person_name)}
-              {renderField("Contact", visit.contact_person_detail)}
-              {renderField("Meeting Type", visit.meeting_type)}
-
-              {visit.status && (
-                <p className="mb-1">
-                  <strong>Status:</strong>{" "}
-                  <span
-                    className={`badge ${
-                      visit.status === "Open"
-                        ? "bg-warning text-dark"
-                        : "bg-success"
-                    }`}
-                  >
-                    {visit.status}
-                  </span>
-                </p>
-              )}
-
-              {visit.created_at &&
-                renderField(
-                  "Created At",
-                  new Date(visit.created_at).toLocaleString()
-                )}
-            </div>
+        <div className="row g-4">
+          <div className="col-md-6">
+            {visit.company_name && (
+              <h5 className="fw-bold text-dark">
+                Company Name: {visit.company_name}
+              </h5>
+            )}
+            {renderField("Designation", visit.designation)}
+            {renderField("Acquisition Stage", visit.acquisition_stage)}
+            {renderField("Client Budget", visit.client_budget)}
           </div>
 
-          {(visit.item_discussed || visit.place_name || visit.nation) && <hr />}
+          <div className="col-md-6">
+            {(visit.contact_person_name || visit.contact_person_detail) && (
+              <h6 className="fw-bold text-dark">Contact Person</h6>
+            )}
+            {renderField("Name", visit.contact_person_name)}
+            {renderField("Contact", visit.contact_person_detail)}
+            {renderField("Meeting Type", visit.meeting_type)}
 
-          <div className="row mb-4">
-            {visit.item_discussed && (
-              <div className="col-md-6">
-                <h6 className="fw-bold text-secondary">Discussion Summary</h6>
-                <p className="border rounded p-2 bg-light">
-                  {visit.item_discussed}
-                </p>
-              </div>
+            {visit.status && (
+              <p className="mb-1">
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`badge ${
+                    visit.status === "Open"
+                      ? "bg-warning text-dark"
+                      : "bg-success"
+                  }`}
+                >
+                  {visit.status}
+                </span>
+              </p>
             )}
 
-            {(visit.place_name || visit.nation || mapUrl) && (
-              <div className="col-md-6">
-                <h6 className="fw-bold text-secondary">Location Details</h6>
-
-                {renderField("Place", visit.place_name)}
-                {renderField("Nation", visit.nation)}
-
-                {mapUrl ? (
-                  <a
-                    href={mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline-primary btn-sm mt-2"
-                  >
-                    <i className="bi bi-geo-alt"></i> View on Google Maps
-                  </a>
-                ) : null}
-              </div>
-            )}
+            {visit.created_at &&
+              renderField(
+                "Created At",
+                new Date(visit.created_at).toLocaleString()
+              )}
           </div>
+        </div>
 
-          {visit.visit_image && (
-            <>
-              <hr />
-              <div>
-                <h6 className="fw-bold text-secondary mb-2">Visit Image</h6>
+        {(visit.item_discussed || visit.place_name || visit.nation) && (
+          <hr className="my-4" />
+        )}
+
+        <div className="row g-4">
+          {visit.item_discussed && (
+            <div className="col-md-6">
+              <h6 className="fw-bold text-dark">Discussion Summary</h6>
+              <div
+                className="border rounded p-3"
+                style={{ borderColor: "#ccc" }}
+              >
+                {visit.item_discussed}
+              </div>
+            </div>
+          )}
+
+          {(visit.place_name || visit.nation || mapUrl) && (
+            <div className="col-md-6">
+              <h6 className="fw-bold text-dark">Location Details</h6>
+              {renderField("Place", visit.place_name)}
+              {renderField("Nation", visit.nation)}
+
+              {mapUrl && (
+                <a
+                  href={mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline-primary btn-sm mt-2"
+                >
+                  <i className="bi bi-geo-alt"></i> View on Google Maps
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+
+        {visit.visit_image && (
+          <>
+            <hr className="my-4" />
+            <div>
+              <h6 className="fw-bold text-dark mb-2">Visit Image</h6>
+              <div
+                style={{
+                  width: "100%",
+                  maxWidth: "650px",
+                  height: "400px",
+                  overflow: "hidden",
+                  borderRadius: "12px",
+                  border: "1px solid #ccc",
+                }}
+              >
                 <img
                   src={visit.visit_image}
                   alt="Visit"
-                  className="img-fluid rounded border"
-                  style={{ maxHeight: "300px", objectFit: "cover" }}
+                  className="img-fluid w-100 h-100"
+                  style={{
+                    objectFit: "cover",
+                    borderRadius: "12px",
+                    transition: "transform 0.3s ease",
+                  }}
+                  onMouseOver={(e) => (e.target.style.transform = "scale(1.05)")}
+                  onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
                 />
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

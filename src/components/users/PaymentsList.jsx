@@ -1,129 +1,143 @@
+// src/components/PaymentsList.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { FaSearch } from "react-icons/fa"; // Import search icon
+import axios from "axios";
+import { useTable, useSortBy, useGlobalFilter } from "react-table";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FaSearch } from "react-icons/fa";
+
+function GlobalFilter({ globalFilter, setGlobalFilter }) {
+  return (
+    <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="input-group w-50">
+        <span className="input-group-text bg-light">
+          <FaSearch />
+        </span>
+        <input
+          value={globalFilter || ""}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="form-control"
+          placeholder="Search payments by customer..."
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function PaymentsList() {
   const [payments, setPayments] = useState([]);
-  const [filteredPayments, setFilteredPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [searchCustomer, setSearchCustomer] = useState("");
   const token = localStorage.getItem("accessToken");
 
-  useEffect(() => {
-    const fetchPayments = async () => {
-      try {
-        const res = await axios.get("http://127.0.0.1:8000/payments/payments-list/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setPayments(res.data);
-        setFilteredPayments(res.data);
-      } catch (err) {
-        console.error("Error fetching payments:", err);
-        setError("Failed to fetch payments.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchPayments = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/payments/payments-list/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = Array.isArray(res.data) ? res.data : res.data.results;
+      setPayments(data || []);
+    } catch (err) {
+      console.error("Failed to fetch payments:", err);
+    }
+  };
 
+  useEffect(() => {
     fetchPayments();
-  }, [token]);
+    const interval = setInterval(fetchPayments, 10000); // refresh every 10s
+    return () => clearInterval(interval);
+  }, []);
 
-  // Filter by customer
-  useEffect(() => {
-    const filtered = payments.filter((p) =>
-      p.sales__customer__company_name.toLowerCase().includes(searchCustomer.toLowerCase())
-    );
-    setFilteredPayments(filtered);
-  }, [searchCustomer, payments]);
-
-  if (loading) return <div className="text-center mt-5">Loading payments...</div>;
-  if (error) return <div className="alert alert-danger mt-5">{error}</div>;
-
-  const totalCollectedAll = filteredPayments.reduce(
-    (sum, p) => sum + parseFloat(p.total_collected || 0),
-    0
+  const columns = React.useMemo(
+    () => [
+      { Header: "SN", Cell: ({ row }) => row.index + 1 },
+      { Header: "Customer", accessor: "sales__customer__company_name" },
+      {
+        Header: "Total Collected",
+        accessor: "total_collected",
+        Cell: ({ value }) => parseFloat(value).toLocaleString() + " TZS",
+      },
+      {
+        Header: "Remaining Balance",
+        accessor: "remaining_balance",
+        Cell: ({ value }) => (
+          <span className={parseFloat(value) > 0 ? "text-danger fw-bold" : "text-success fw-bold"}>
+            {parseFloat(value).toLocaleString()} TZS
+          </span>
+        ),
+      },
+      {
+        Header: "Last Payment Date",
+        accessor: "last_payment_date",
+        Cell: ({ value }) => (value ? new Date(value).toLocaleString() : "N/A"),
+      },
+      
+    ],
+    []
   );
-  const totalRemainingAll = filteredPayments.reduce(
-    (sum, p) => sum + parseFloat(p.remaining_balance || 0),
-    0
-  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    state,
+    setGlobalFilter,
+  } = useTable({ columns, data: payments }, useGlobalFilter, useSortBy);
+
+  // Calculate totals
+  const totalCollectedAll = payments.reduce((sum, p) => sum + parseFloat(p.total_collected || 0), 0);
+  const totalRemainingAll = payments.reduce((sum, p) => sum + parseFloat(p.remaining_balance || 0), 0);
 
   return (
-    <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Customer Payment Summary</h3>
         <div className="text-end">
-          <h6 className="mb-1 text-success">
-            Total Collected: {totalCollectedAll.toLocaleString()} TZS
-          </h6>
-          <h6 className="text-danger">
-            Total Remaining: {totalRemainingAll.toLocaleString()} TZS
-          </h6>
+          <h6 className="mb-1 text-success">Total Collected: {totalCollectedAll.toLocaleString()} TZS</h6>
+          <h6 className="text-danger">Total Remaining: {totalRemainingAll.toLocaleString()} TZS</h6>
         </div>
       </div>
 
-      {/* Search by Customer */}
-      <div className="mb-3" style={{ maxWidth: "400px" }}>
-        <div className="input-group">
-          <span className="input-group-text bg-white border-end-0">
-            <FaSearch />
-          </span>
-          <input
-            type="text"
-            className="form-control border-start-0"
-            placeholder="Search by Customer"
-            value={searchCustomer}
-            onChange={(e) => setSearchCustomer(e.target.value)}
-          />
-        </div>
-      </div>
+      <GlobalFilter globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
 
-      {filteredPayments.length === 0 ? (
-        <div className="alert alert-info">No payments found.</div>
-      ) : (
-        <table className="table table-striped table-hover shadow-sm">
-          <thead className="table-primary">
-            <tr>
-              <th>#</th>
-              <th>Customer</th>
-              <th>Total Collected</th>
-              <th>Remaining Balance</th>
-              <th>Last Payment Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPayments.map((p, i) => (
-              <tr key={i}>
-                <td>{i + 1}</td>
-                <td>{p.sales__customer__company_name}</td>
-                <td>{parseFloat(p.total_collected).toLocaleString()} TZS</td>
-                <td
-                  className={
-                    parseFloat(p.remaining_balance) > 0
-                      ? "text-danger fw-bold"
-                      : "text-success fw-bold"
-                  }
-                >
-                  {parseFloat(p.remaining_balance).toLocaleString()} TZS
-                </td>
-                <td>{new Date(p.last_payment_date).toLocaleString()}</td>
-                <td>
-                  <Link
-                    to={`/payments/customer/${p.sales__customer__id}`}
-                    className="btn btn-sm btn-outline-primary"
-                  >
-                    View Details
-                  </Link>
-                </td>
+      <div className="table-responsive shadow-sm rounded">
+        <table {...getTableProps()} className="table table-hover align-middle table-bordered">
+          <thead className="table-light">
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
+                    {column.render("Header")}
+                    <span>{column.isSorted ? (column.isSortedDesc ? " 🔽" : " 🔼") : ""}</span>
+                  </th>
+                ))}
               </tr>
             ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.length ? (
+              rows.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()} key={row.id}>
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()} key={cell.column.id}>
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="text-center text-muted">
+                  No payments found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
 }

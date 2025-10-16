@@ -181,7 +181,7 @@ export default function AddVisit() {
               onChange={(e) => setSelectedCompany(e.target.value)}
               required
             >
-              <option value="">Select Company</option>
+              <option value="">Select Customer Name</option>
               {companies.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.company_name}

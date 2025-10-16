@@ -1,6 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { FaTag, FaCashRegister, FaCheckCircle } from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/AddVisit.css";
+
+const STAGES = {
+  PROPOSAL: "Proposal",
+  CLOSING: "Closing",
+  PAYMENT: "Payment Followup",
+};
+
+// Stable Payment Input to prevent cursor loss
+const PaymentInput = React.memo(({ productId, value, onChange, max }) => {
+  return (
+    <input
+      type="number"
+      className="form-control text-end"
+      value={value || ""}
+      onChange={(e) => onChange(productId, e.target.value)}
+      min={0}
+      max={Number(max) || undefined}
+      placeholder="Enter payment"
+    />
+  );
+});
 
 export default function SalesCreate() {
   const { id } = useParams();
@@ -9,75 +33,142 @@ export default function SalesCreate() {
   const [visit, setVisit] = useState(null);
   const [salesItems, setSalesItems] = useState([]);
   const [isFinalOrder, setIsFinalOrder] = useState(false);
-  const [stage, setStage] = useState("Proposal or Negotiation");
+  const [stage, setStage] = useState(STAGES.PROPOSAL);
   const [status, setStatus] = useState("");
-  const [reasonLost, setReasonLost] = useState(""); // ✅ rename for clarity
+  const [reasonLost, setReasonLost] = useState("");
   const [paymentAmounts, setPaymentAmounts] = useState({});
   const [saving, setSaving] = useState(false);
 
-  // Fetch visit details
+  const lsKey = (k) => `sales_${id}_${k}`;
+  const getLocal = (key, fallback = null) => {
+    const v = localStorage.getItem(lsKey(key));
+    if (v === "true") return true;
+    if (v === "false") return false;
+    return v || fallback;
+  };
+
+  // Reset reasonLost only if status changes from Lost to something else
+  useEffect(() => {
+    if (status !== "Lost") setReasonLost("");
+  }, [status]);
+
+  const fetchVisit = async () => {
+    try {
+      const visitRes = await axios.get(
+        `http://127.0.0.1:8000/visits/visit-details/${id}/`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const visitData = visitRes.data;
+      setVisit(visitData);
+
+      let existingSale = null;
+      try {
+        const saleRes = await axios.get(
+          `http://127.0.0.1:8000/sales/from-visit/${id}/`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        existingSale = saleRes.data;
+      } catch {
+        existingSale = null;
+      }
+
+      let newStage = getLocal("stage", STAGES.PROPOSAL);
+      if (existingSale) {
+        if (existingSale.is_order_final) newStage = STAGES.CLOSING;
+        else if (existingSale.status === "Won") newStage = STAGES.PAYMENT;
+        else if (existingSale.status) newStage = STAGES.CLOSING;
+      } else if (visitData.acquisition_stage === "Closing") newStage = STAGES.CLOSING;
+      else if (visitData.acquisition_stage === "Payment Followup") newStage = STAGES.PAYMENT;
+
+      setStage(newStage);
+      localStorage.setItem(lsKey("stage"), newStage);
+
+      if (existingSale) {
+        setIsFinalOrder(!!existingSale.is_order_final);
+        setStatus(existingSale.status || "");
+        // Keep previous reasonLost if present
+        setReasonLost((prev) => existingSale.reason_lost ?? prev ?? "");
+      } else {
+        setIsFinalOrder(getLocal("isFinal", false));
+        setStatus(getLocal("status", ""));
+        setReasonLost(getLocal("reason", ""));
+      }
+
+      const cachedProducts = JSON.parse(localStorage.getItem(`visit_products_${id}`) || "[]");
+      const products = visitData.products_interested?.length
+        ? visitData.products_interested
+        : cachedProducts;
+      localStorage.setItem(`visit_products_${id}`, JSON.stringify(products));
+
+      const existingItems = existingSale?.items || visitData.sales_items || [];
+      const savedPrices = JSON.parse(localStorage.getItem(lsKey("prices")) || "{}");
+
+      const items = products.map((p, idx) => {
+        const savedItem = existingItems.find((si) => si.product === p.id) || {};
+        const priceFromLS = savedPrices[p.id];
+        return {
+          product: p.id,
+          product_name: p.product_name || p.name || `Product ${p.id}`,
+          price: priceFromLS !== undefined ? priceFromLS : savedItem.price ?? "",
+          key: `${p.id}-${idx}`,
+        };
+      });
+      setSalesItems(items);
+    } catch (err) {
+      console.error("Error fetching visit:", err);
+    }
+  };
+
   useEffect(() => {
     if (!id) return;
-
-    axios
-      .get(`http://127.0.0.1:8000/visits/visit-details/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const visitData = res.data;
-        setVisit(visitData);
-        setStage("Proposal or Negotiation");
-
-        const cachedProducts = JSON.parse(
-          localStorage.getItem(`visit_products_${id}`) || "[]"
-        );
-
-        const products =
-          visitData.products_interested?.length > 0
-            ? visitData.products_interested
-            : cachedProducts;
-
-        const existingItems = visitData.sales_items || [];
-
-        const newSalesItems = products.map((p, idx) => {
-          const savedItem = existingItems.find((si) => si.product === p.id);
-          return {
-            product: p.id,
-            product_name: p.product_name || "Unnamed Product",
-            price: savedItem ? savedItem.price : "",
-            key: `${p.id}-${idx}`,
-          };
-        });
-
-        localStorage.setItem(`visit_products_${id}`, JSON.stringify(products));
-        setSalesItems(newSalesItems);
-      })
-      .catch((err) => console.error("Failed to fetch visit details:", err));
+    fetchVisit();
   }, [id, token]);
 
-  // Update price for each product
+  useEffect(() => {
+    if (id) localStorage.setItem(lsKey("isFinal"), isFinalOrder);
+  }, [isFinalOrder, id]);
+
+  useEffect(() => {
+    if (id) localStorage.setItem(lsKey("status"), status);
+  }, [status, id]);
+
+  useEffect(() => {
+    if (id) localStorage.setItem(lsKey("reason"), reasonLost);
+  }, [reasonLost, id]);
+
+  useEffect(() => {
+    if (id) localStorage.setItem(lsKey("stage"), stage);
+  }, [stage, id]);
+
+  useEffect(() => {
+    if (!id) return;
+    const priceMap = {};
+    salesItems.forEach((it) => {
+      if (it.price !== "" && it.price !== null) priceMap[it.product] = it.price;
+    });
+    localStorage.setItem(lsKey("prices"), JSON.stringify(priceMap));
+  }, [salesItems, id]);
+
   const handlePriceChange = (index, value) => {
     setSalesItems((prev) => {
-      const items = [...prev];
-      items[index].price = value;
-      return items;
+      const clone = [...prev];
+      clone[index].price = value;
+      return clone;
     });
   };
 
-  // Update payment for each product
   const handlePaymentChange = (productId, value) => {
     setPaymentAmounts((prev) => ({ ...prev, [productId]: value }));
   };
 
-  // Submit sales data
+  const totalPrice = salesItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+
   const handleSubmit = async () => {
     if (!visit || saving) return;
     setSaving(true);
-
     try {
-      // Build payments array only if in Payment Followup stage
       const paymentsArray =
-        stage === "Payment Followup"
+        stage === STAGES.PAYMENT
           ? salesItems
               .map((item) => ({
                 product: item.product,
@@ -87,13 +178,13 @@ export default function SalesCreate() {
           : [];
 
       const payload = {
-        is_order_final: isFinalOrder,
         items: salesItems.map((item) => ({
           product: item.product,
           price: Number(item.price) || 0,
         })),
-        ...(stage === "Closing" && { status }),
-        ...(status === "Lost" && { reason_lost: reasonLost }), // ✅ match serializer
+        ...(stage === STAGES.PROPOSAL && { is_order_final: isFinalOrder }),
+        ...(stage === STAGES.CLOSING && { status }),
+        ...(status === "Lost" && { reason_lost: reasonLost }),
         ...(paymentsArray.length > 0 && { payments: paymentsArray }),
       };
 
@@ -104,182 +195,187 @@ export default function SalesCreate() {
       );
 
       alert("Saved successfully!");
+      await fetchVisit();
     } catch (err) {
       console.error(err);
-      const message =
-        err.response?.data ? JSON.stringify(err.response.data) : "Failed to save sales.";
-      alert(message);
+      alert("Failed to save sales.");
     } finally {
       setSaving(false);
     }
   };
 
   const handleNextStage = () => {
-    if (stage === "Proposal or Negotiation") {
-      if (!isFinalOrder) {
-        alert("Mark as Final Order to proceed to Closing stage.");
-        return;
-      }
-      setStage("Closing");
-    } else if (stage === "Closing") {
-      if (!status) {
-        alert("Select status to proceed.");
-        return;
-      }
-      if (status === "Lost" && !reasonLost) {
-        alert("Enter reason for lost sale to proceed.");
-        return;
-      }
-      if (status === "Won") {
-        setStage("Payment Followup");
-      }
+    if (stage === STAGES.PROPOSAL && !isFinalOrder) {
+      alert("Mark as Final Order before proceeding.");
+      return;
     }
+    if (stage === STAGES.CLOSING) {
+      if (!status) return alert("Select status to proceed.");
+      if (status === "Lost" && !reasonLost) return alert("Enter reason before proceeding.");
+    }
+
+    const next =
+      stage === STAGES.PROPOSAL
+        ? STAGES.CLOSING
+        : stage === STAGES.CLOSING
+        ? STAGES.PAYMENT
+        : STAGES.PAYMENT;
+    setStage(next);
+    localStorage.setItem(lsKey("stage"), next);
   };
 
-  const totalPrice = salesItems.reduce(
-    (sum, item) => sum + (Number(item.price) || 0),
-    0
-  );
+  if (!visit)
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-50">
+        <div className="spinner-border text-primary" role="status" />
+      </div>
+    );
 
   return (
-    <div className="container mt-5">
-      <h4>Sales for {visit?.company_name || "Unknown Company"}</h4>
-      <p>
-        <strong>Stage:</strong> {stage}
-      </p>
+    <div className="container py-3" style={{ maxWidth: "95%" }}>
+      <div
+        className="border rounded-4 shadow-sm p-4"
+        style={{ background: "transparent", border: "1px solid #ddd" }}
+      >
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="fw-bold mb-0 text-primary d-flex align-items-center">
+            <FaCashRegister className="me-2" />
+            Sales for {visit.company_name}
+          </h4>
+          <span className="badge bg-light text-dark border px-3 py-2">{stage}</span>
+        </div>
 
-      {/* Proposal / Negotiation Stage */}
-      {stage === "Proposal or Negotiation" && (
-        <>
-          {salesItems.length > 0 ? (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {salesItems.map((item, idx) => (
-                  <tr key={item.key}>
-                    <td>{item.product_name}</td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={item.price}
-                        onChange={(e) => handlePriceChange(idx, e.target.value)}
-                        min={0}
-                        placeholder="Enter price"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No products found.</p>
-          )}
-
-          <p>
-            <strong>Total:</strong> {totalPrice}
-          </p>
-
-          <div className="form-check mb-3">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              checked={isFinalOrder}
-              onChange={(e) => setIsFinalOrder(e.target.checked)}
-              id="finalOrderCheck"
-            />
-            <label htmlFor="finalOrderCheck" className="form-check-label">
-              Mark as Final Order
-            </label>
-          </div>
-        </>
-      )}
-
-      {/* Closing Stage */}
-      {stage === "Closing" && (
-        <>
-          <div className="mb-3">
-            <label>Status</label>
-            <select
-              className="form-select"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="">Select status</option>
-              <option value="Won">Won</option>
-              <option value="Lost">Lost</option>
-              <option value="Paid">Paid</option>
-            </select>
-          </div>
-
-          {status === "Lost" && (
-            <div className="mb-3">
-              <textarea
-                className="form-control"
-                placeholder="Enter reason"
-                value={reasonLost} // ✅ updated
-                onChange={(e) => setReasonLost(e.target.value)}
-                rows={3}
-              />
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Payment Follow-up Stage */}
-      {stage === "Payment Followup" && (
-        <>
-          <h5>Enter Payments</h5>
-          <table className="table">
-            <thead>
+        {/* ---------- Bootstrap Table ---------- */}
+        <div className="table-responsive mb-3">
+          <table className="table table-bordered align-middle">
+            <thead className="table-light">
               <tr>
                 <th>Product</th>
-                <th>Payment Amount</th>
+                <th>Price (TZS)</th>
+                {stage === STAGES.PAYMENT && <th>Payment (TZS)</th>}
               </tr>
             </thead>
             <tbody>
-              {salesItems.map((item) => (
+              {salesItems.map((item, index) => (
                 <tr key={item.key}>
                   <td>{item.product_name}</td>
                   <td>
                     <input
                       type="number"
-                      className="form-control"
-                      value={paymentAmounts[item.product] || ""}
-                      onChange={(e) =>
-                        handlePaymentChange(item.product, e.target.value)
-                      }
-                      min={0}
-                      max={Number(item.price) || undefined}
-                      placeholder="Enter payment amount"
+                      className="form-control text-end"
+                      value={item.price}
+                      onChange={(e) => handlePriceChange(index, e.target.value)}
+                      disabled={isFinalOrder || stage === STAGES.PAYMENT}
+                      placeholder="Enter price"
                     />
                   </td>
+                  {stage === STAGES.PAYMENT && (
+                    <td>
+                      <PaymentInput
+                        productId={item.product}
+                        value={paymentAmounts[item.product]}
+                        onChange={handlePaymentChange}
+                        max={item.price}
+                      />
+                    </td>
+                  )}
                 </tr>
               ))}
+              {salesItems.length === 0 && (
+                <tr>
+                  <td colSpan={stage === STAGES.PAYMENT ? 3 : 2}>No products found.</td>
+                </tr>
+              )}
             </tbody>
           </table>
-        </>
-      )}
+        </div>
 
-      {/* Action Buttons */}
-      <div className="d-flex gap-3 mt-3">
-        <button
-          className="btn btn-primary"
-          onClick={handleSubmit}
-          disabled={saving}
-        >
-          Save
-        </button>
+        {/* ---------- Proposal Stage ---------- */}
+        {stage === STAGES.PROPOSAL && (
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+            <div>
+              <h6>
+                Total: <strong>{totalPrice.toLocaleString()} TZS</strong>
+              </h6>
+              <small className="text-muted">Edit prices until you mark final.</small>
+            </div>
 
-        {stage !== "Payment Followup" && (
-          <button className="btn btn-success" onClick={handleNextStage}>
-            Next Stage →
-          </button>
+            <div className="d-flex flex-wrap gap-3">
+              <div className="form-check">
+                <input
+                  id="finalOrderCheck"
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={isFinalOrder}
+                  onChange={(e) => setIsFinalOrder(e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="finalOrderCheck">
+                  <FaCheckCircle className="me-1" /> Final Order
+                </label>
+              </div>
+
+              <button className="btn btn-primary btn-sm" onClick={handleSubmit} disabled={saving}>
+                {saving ? "Saving..." : "Save"}
+              </button>
+
+              <button className="btn btn-success btn-sm" onClick={handleNextStage}>
+                Next Stage →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ---------- Closing Stage ---------- */}
+        {stage === STAGES.CLOSING && (
+          <div className="border rounded p-3 mt-3">
+            <h6 className="fw-semibold mb-3 d-flex align-items-center">
+              <FaTag className="me-2" /> Closing
+            </h6>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Status</label>
+              <select
+                className="form-select"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="">Select status</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </div>
+
+            {status === "Lost" && (
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Reason for Lost</label>
+                <textarea
+                  className="form-control"
+                  rows={3}
+                  value={reasonLost}
+                  onChange={(e) => setReasonLost(e.target.value)}
+                />
+              </div>
+            )}
+
+            <div className="d-flex flex-wrap justify-content-end gap-2">
+              <button className="btn btn-primary btn-sm" onClick={handleSubmit} disabled={saving}>
+                {saving ? "Saving..." : "Save"}
+              </button>
+              <button className="btn btn-success btn-sm" onClick={handleNextStage}>
+                Proceed →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ---------- Payment Stage ---------- */}
+        {stage === STAGES.PAYMENT && (
+          <div className="d-flex justify-content-end mt-3">
+            <button className="btn btn-primary btn-sm" onClick={handleSubmit} disabled={saving}>
+              {saving ? "Saving..." : "Save Payments"}
+            </button>
+          </div>
         )}
       </div>
     </div>

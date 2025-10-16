@@ -1,51 +1,52 @@
+// src/components/SalesList.jsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useTable, useSortBy, useGlobalFilter } from "react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaSearch } from "react-icons/fa"; // search icon
+import { FaSearch } from "react-icons/fa";
+
+function GlobalFilter({ globalFilter, setGlobalFilter }) {
+  return (
+    <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="input-group w-50">
+        <span className="input-group-text bg-light">
+          <FaSearch />
+        </span>
+        <input
+          value={globalFilter || ""}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="form-control"
+          placeholder="Search sales by customer..."
+        />
+      </div>
+     
+    </div>
+  );
+}
 
 export default function SalesList() {
   const [sales, setSales] = useState([]);
-  const [filteredSales, setFilteredSales] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [searchCustomer, setSearchCustomer] = useState("");
   const token = localStorage.getItem("accessToken");
 
-  // Fetch sales
-  useEffect(() => {
-    const fetchSales = async () => {
-      try {
-        const res = await axios.get("http://127.0.0.1:8000/sales/sales-list/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSales(res.data);
-        setFilteredSales(res.data);
-      } catch (err) {
-        console.error("Error fetching sales:", err);
-        setError("Failed to fetch sales.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSales = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/sales/sales-list/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = Array.isArray(res.data) ? res.data : res.data.results;
+      setSales(data || []);
+    } catch (err) {
+      console.error("Failed to fetch sales:", err);
+    }
+  };
 
+  useEffect(() => {
     fetchSales();
-  }, [token]);
+    const interval = setInterval(fetchSales, 10000); // refresh every 10s
+    return () => clearInterval(interval);
+  }, []);
 
-  // Filter by customer dynamically
-  useEffect(() => {
-    const filtered = sales.filter((sale) =>
-      (sale.customer_name || "")
-        .toLowerCase()
-        .includes(searchCustomer.toLowerCase())
-    );
-    setFilteredSales(filtered);
-  }, [searchCustomer, sales]);
-
-  if (loading) return <div className="text-center mt-5">Loading sales...</div>;
-  if (error) return <div className="alert alert-danger mt-5">{error}</div>;
-
-  // Map status to Bootstrap badge classes
   const getStatusBadge = (status) => {
     switch (status) {
       case "Open":
@@ -61,75 +62,117 @@ export default function SalesList() {
     }
   };
 
+  const columns = React.useMemo(
+    () => [
+      { Header: "#", Cell: ({ row }) => row.index + 1 },
+      { Header: "Customer", accessor: "customer_name" },
+      { Header: "Total Price", accessor: (row) => `${row.total_price || 0} TZS` },
+      {
+        Header: "Final Order",
+        accessor: "is_order_final",
+        Cell: ({ value }) =>
+          value ? (
+            <span className="badge bg-success">Yes</span>
+          ) : (
+            <span className="badge bg-danger">No</span>
+          ),
+      },
+      {
+        Header: "Status",
+        accessor: "status",
+        Cell: ({ value }) => (
+          <span className={`badge ${getStatusBadge(value)}`}>{value || "N/A"}</span>
+        ),
+      },
+      {
+        Header: "Date",
+        accessor: (row) => new Date(row.created_at).toLocaleString(),
+      },
+      {
+        Header: "Actions",
+        Cell: ({ row }) => {
+          const sale = row.original;
+          return (
+            <div className="d-flex gap-2 justify-content-end">
+              <Link
+                to={`/sales-details/${sale.id}`}
+                className="btn btn-sm btn-outline-info"
+              >
+                View Sales
+              </Link>
+              
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    state,
+    setGlobalFilter,
+  } = useTable({ columns, data: sales }, useGlobalFilter, useSortBy);
+
   return (
-    <div className="container mt-5">
-      <h3 className="mb-4">All Sales Orders</h3>
+    <div className="container mt-4">
+      <h3 className="mb-3 fw-bold text-primary">
+        Sales Management
+      </h3>
 
-      {/* Search input */}
-      <div className="input-group mb-3">
-        <span className="input-group-text" id="search-addon">
-          <FaSearch />
-        </span>
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search by customer"
-          value={searchCustomer}
-          onChange={(e) => setSearchCustomer(e.target.value)}
-        />
-      </div>
+      <GlobalFilter globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
 
-      {filteredSales.length === 0 ? (
-        <div className="alert alert-info">No sales found.</div>
-      ) : (
-        <table className="table table-striped table-hover shadow-sm">
-          <thead className="table-primary">
-            <tr>
-              <th>#</th>
-              <th>Customer</th>
-              <th>Total Price</th>
-              <th>Final Order</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredSales.map((sale, index) => (
-              <tr key={sale.id}>
-                <td>{index + 1}</td>
-                <td>{sale.customer_name || "N/A"}</td>
-                <td>{sale.total_price ? `${sale.total_price} TZS` : "0"}</td>
-                <td>
-                  {sale.is_order_final ? (
-                    <span className="badge bg-success">Yes</span>
-                  ) : (
-                    <span className="badge bg-danger">No</span>
-                  )}
-                </td>
-                <td>
-                  {sale.status ? (
-                    <span className={`badge ${getStatusBadge(sale.status)}`}>
-                      {sale.status}
-                    </span>
-                  ) : (
-                    <span className="badge bg-secondary">N/A</span>
-                  )}
-                </td>
-                <td>{new Date(sale.created_at).toLocaleDateString()}</td>
-                <td>
-                  <Link
-                    to={`/sales-details/${sale.id}`}
-                    className="btn btn-sm btn-outline-primary"
+      <div className="table-responsive shadow-sm rounded">
+        <table
+          {...getTableProps()}
+          className="table table-hover align-middle table-bordered"
+        >
+          <thead className="table-light">
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+                {headerGroup.headers.map((column) => (
+                  <th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    key={column.id}
                   >
-                    View
-                  </Link>
-                </td>
+                    {column.render("Header")}
+                    <span>
+                      {column.isSorted ? (column.isSortedDesc ? " 🔽" : " 🔼") : ""}
+                    </span>
+                  </th>
+                ))}
               </tr>
             ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.length ? (
+              rows.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()} key={row.id}>
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()} key={cell.column.id}>
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="text-center text-muted">
+                  No sales found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
 }

@@ -73,13 +73,13 @@ export default function Visits() {
                 to={`/visit-details/${id}`}
                 className="btn btn-sm btn-outline-info"
               >
-                <i className="bi bi-eye"></i> View
+                <i className="bi bi-eye"></i> View Detail
               </Link>
                <Link
           to={`/visit-update/${id}/update`}
           className="btn btn-sm btn-outline-warning"
         >
-          <i className="bi bi-pencil-square"></i> Edit
+          <i className="bi bi-pencil-square"></i> Add Followup
         </Link>
               {mapLink && (
                 <a

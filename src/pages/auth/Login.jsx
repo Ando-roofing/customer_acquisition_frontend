@@ -23,7 +23,10 @@ export default function Login() {
     setMessage(null);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/accounts/login/", formData);
+      const res = await axios.post(
+        "http://127.0.0.1:8000/accounts/login/",
+        formData
+      );
 
       localStorage.setItem("accessToken", res.data.tokens.access);
       localStorage.setItem("refreshToken", res.data.tokens.refresh);
@@ -34,9 +37,17 @@ export default function Login() {
       setMessage("Login successful!");
 
       const position = res.data.position;
-      if (["Facilitator", "Product Brand Manager", "Zonal Sales Executive", "admin"].includes(position)) {
+      if (
+        ["Facilitator", "Product Brand Manager", "Zonal Sales Executive", "admin"].includes(
+          position
+        )
+      ) {
         navigate("/dashboard");
-      } else if (["Corporate Officer", "Mobile Sales Officer", "Desk Sales Officer"].includes(position)) {
+      } else if (
+        ["Corporate Officer", "Mobile Sales Officer", "Desk Sales Officer"].includes(
+          position
+        )
+      ) {
         navigate("/add_visit");
       } else {
         navigate("/index");
@@ -55,25 +66,47 @@ export default function Login() {
 
   return (
     <div className="container d-flex align-items-center justify-content-center vh-100">
-      <div className="card shadow-lg p-4 rounded-4" style={{ maxWidth: "420px", width: "100%" }}>
+      <div
+        className="card p-4 rounded-4 shadow-lg"
+        style={{
+          maxWidth: "420px",
+          width: "100%",
+          background: "rgba(255, 255, 255, 0.1)", // transparent card
+          border: "1px solid rgba(255, 255, 255, 0.2)", // subtle border
+          backdropFilter: "blur(8px)", // light glass effect
+        }}
+      >
         <div className="text-center mb-4">
-          <FaSignInAlt size={50} className="text-primary mb-2" />
-          <h3 className="fw-bold">Welcome Back</h3>
-          <p className="text-muted small">Please login to continue</p>
+          <FaSignInAlt size={50} className="mb-2" />
+          <h3 className="fw-bold" style={{ color: "#333" }}>
+            Welcome Back
+          </h3>
+          <p className="small" style={{ color: "#666" }}>
+            Please login to continue
+          </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {message && (
-            <div className={`alert ${message.includes("success") ? "alert-success" : "alert-danger"} py-2`}>
+            <div
+              className={`alert ${
+                message.includes("success") ? "alert-success" : "alert-danger"
+              } py-2`}
+            >
               {message}
             </div>
           )}
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">Email</label>
+            <label className="form-label fw-semibold" style={{ color: "#333" }}>
+              Email
+            </label>
             <div className="input-group">
-              <span className="input-group-text bg-light">
-                <FaEnvelope className="text-primary" />
+              <span
+                className="input-group-text"
+                style={{ background: "#fff", border: "1px solid #ccc" }}
+              >
+                <FaEnvelope />
               </span>
               <input
                 type="email"
@@ -83,15 +116,26 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                style={{
+                  minWidth: "250px",
+                  border: "1px solid rgba(0,0,0,0.2)",
+                  background: "rgba(255,255,255,0.15)",
+                  color: "#333",
+                }}
               />
             </div>
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">Password</label>
+            <label className="form-label fw-semibold" style={{ color: "#333" }}>
+              Password
+            </label>
             <div className="input-group">
-              <span className="input-group-text bg-light">
-                <FaLock className="text-primary" />
+              <span
+                className="input-group-text"
+                style={{ background: "#fff", border: "1px solid #ccc" }}
+              >
+                <FaLock />
               </span>
               <input
                 type="password"
@@ -101,18 +145,25 @@ export default function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                style={{
+                  minWidth: "250px",
+                  border: "1px solid rgba(0,0,0,0.2)",
+                  background: "rgba(255,255,255,0.15)",
+                  color: "#333",
+                }}
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className="btn btn-primary w-100 rounded-3 mt-2 py-2 fw-semibold"
+            className="btn btn-secondary w-100 rounded-3 mt-2 py-2 fw-semibold"
             disabled={isLoading}
           >
             {isLoading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2"></span> Logging in...
+                <span className="spinner-border spinner-border-sm me-2"></span>{" "}
+                Logging in...
               </>
             ) : (
               <>
@@ -123,7 +174,7 @@ export default function Login() {
         </form>
 
         <div className="text-center mt-3">
-          <p className="text-muted small">
+          <p className="small" style={{ color: "#666" }}>
             © {new Date().getFullYear()} Ando Roofing — All Rights Reserved
           </p>
         </div>
