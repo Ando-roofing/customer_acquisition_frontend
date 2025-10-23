@@ -32,6 +32,22 @@ import SalesLists from './pages/users/SalesList';
 import Payments from './pages/users/PaymentsList';
 import PaymentDetail from './pages/users/PaymentDetails';
 import SalesDetail from './pages/users/SalesDetails';
+import VisitLisit from './pages/admin/AdminVisitList';
+import Visitdetails from './pages/admin/AdminVisitDetails';
+import AdminSalesList from './pages/admin/AdminSaleList';
+import AdminSalesDetails from './pages/admin/AdminSales';
+import AdminPaymentList from './pages/admin/AdminPaymentList';
+import SubmitVerifications from './pages/users/SubmitVerification';
+import VisitVerificationLisit from './pages/users/VisitVerificationList';
+import VerificationDetail from './pages/users/VerificationDetails';
+import MyVerifications from './pages/admin/Verifications';
+import VerificationsDetail from './pages/admin/VerificationDetail';
+import VerificationsUpdate from './pages/admin/VerificationsUpdate';
+import Messages from './pages/admin/Message';
+import UserVerificationMessage from './pages/users/UserMessage';
+
+
+
 
 
 
@@ -108,22 +124,75 @@ function App() {
     <Route path="/visit-details/:id" element={
       <ProtectedRoute><VisitDetail /></ProtectedRoute>
     } />
+
+    <Route path="/verifications-details/:id" element={
+      <ProtectedRoute><VerificationDetail /></ProtectedRoute>
+    } />
+
+    <Route path="/verification-details/:id" element={
+      <ProtectedRoute><VerificationsDetail /></ProtectedRoute>
+    } />
+
+
+    <Route path="/verification-approve/:id" element={
+      <ProtectedRoute><VerificationsUpdate /></ProtectedRoute>
+    } />
+
+    <Route path="/verification-message/:id" element={
+      <ProtectedRoute><Messages /></ProtectedRoute>
+    } />
+
+
+    <Route path="/user-verification-message/:id" element={
+      <ProtectedRoute><UserVerificationMessage/></ProtectedRoute>
+    } />
+
+
+    <Route path="/admin-visit-details/:id" element={
+      <ProtectedRoute><Visitdetails  /></ProtectedRoute>
+    } />
      <Route path="/visit-update/:id/update" element={
       <ProtectedRoute><UpdateVisits /></ProtectedRoute>
     } />
      <Route path="/sales/:id/" element={
       <ProtectedRoute><CreateSales /></ProtectedRoute>
     } />
+
+    <Route path="/admin-sales-details/:id" element={
+      <ProtectedRoute><AdminSalesDetails /></ProtectedRoute>
+    } />
+
     <Route path="/sale-list" element={
       <ProtectedRoute><SalesLists /></ProtectedRoute>
     } />
+
+    <Route path="/admin-sales-list" element={
+      <ProtectedRoute><AdminSalesList /></ProtectedRoute>
+    } />
+
     <Route path="/payments" element={
       <ProtectedRoute><Payments/></ProtectedRoute>
+    } />
+    <Route path="/verifications" element={
+      <ProtectedRoute><MyVerifications/></ProtectedRoute>
     } />
     <Route
           path="/payments/customer/:customer_id"
           element={<PaymentDetail />}
         />
+        <Route
+          path="/admin-visit-list"
+          element={<VisitLisit />}
+        />
+       
+        <Route
+          path="/admin-payment-list/"
+          element={<AdminPaymentList />}
+        />
+        <Route path="/submit-verification" element={<SubmitVerifications />} />
+
+        <Route path="/visit-verification-list" element={<VisitVerificationLisit />} />
+
         <Route path="/sales-details/:id" element={<SalesDetail />} />
       
   </Routes>

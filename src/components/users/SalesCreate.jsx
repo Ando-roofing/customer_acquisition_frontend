@@ -86,7 +86,7 @@ export default function SalesCreate() {
       if (existingSale) {
         setIsFinalOrder(!!existingSale.is_order_final);
         setStatus(existingSale.status || "");
-        // Keep previous reasonLost if present
+      
         setReasonLost((prev) => existingSale.reason_lost ?? prev ?? "");
       } else {
         setIsFinalOrder(getLocal("isFinal", false));

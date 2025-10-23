@@ -123,13 +123,25 @@ function Sidebar() {
             </li>
 
             <li className="nav-item">
-              <Link to="/sales" className="nav-link text-white d-flex align-items-center">
+              <Link to="/admin-sales-list" className="nav-link text-white d-flex align-items-center">
                 <i className="fas fa-shopping-cart me-2"></i> Sales
               </Link>
             </li>
 
             <li className="nav-item">
-              <Link to="/visits" className="nav-link text-white d-flex align-items-center">
+              <Link to="/admin-payment-list" className="nav-link text-white d-flex align-items-center">
+                <i className="fas fa-shopping-cart me-2"></i> Payments
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link to="/verifications" className="nav-link text-white d-flex align-items-center">
+                <i className="fas fa-shopping-cart me-2"></i> Visit Verifications
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link to="/admin-visit-list" className="nav-link text-white d-flex align-items-center">
                 <i className="fas fa-calendar-check me-2"></i> Visits Submitted
               </Link>
             </li>

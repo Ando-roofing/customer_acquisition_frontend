@@ -125,6 +125,13 @@ function UserSidebar() {
             </li>
 
             <li className="nav-item">
+              <Link to="/visit-verification-list" className="nav-link text-white d-flex align-items-center">
+                <i className="fas fa-calendar-check me-2"></i> Submitted Verifications
+              </Link>
+            </li>
+
+
+            <li className="nav-item">
               <Link to="/customers" className="nav-link text-white d-flex align-items-center">
                 <i className="fas fa-address-book me-2"></i> Customer Directory
               </Link>

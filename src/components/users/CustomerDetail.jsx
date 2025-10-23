@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -13,9 +13,12 @@ export default function CustomerDetail() {
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/customers/customers/${id}/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `http://127.0.0.1:8000/customers/customers/${id}/`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setCustomer(response.data);
       } catch (error) {
         console.error("Error fetching customer details:", error);
@@ -29,59 +32,85 @@ export default function CustomerDetail() {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "70vh" }}>
-        <div className="spinner-border text-primary" role="status"></div>
-        <span className="ms-2 text-primary fw-bold">Loading customer details...</span>
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
     );
   }
 
   if (!customer) {
     return (
-      <div className="text-center mt-5 text-danger">
-        <h4>❌ Customer not found.</h4>
+      <div className="container mt-5 text-center">
+        <h5 className="text-danger">Customer not found.</h5>
+        <Link to="/customers" className="btn btn-secondary mt-3">
+          Back to Customers
+        </Link>
       </div>
     );
   }
 
+  // Helper to conditionally render fields
+  const renderField = (label, value) =>
+    value ? (
+      <p className="mb-1">
+        <strong>{label}:</strong> {value}
+      </p>
+    ) : null;
+
   return (
-    <div className="container mt-5">
-      <div className="card shadow-sm p-4">
-        <h2 className="text-center text-primary mb-4">
-          <i className="fas fa-user me-2"></i> Customer Details
-        </h2>
-
-        <div className="mb-4">
-          <h5 className="text-secondary">Company Information</h5>
-          <hr />
-          <p><strong>Company Name:</strong> {customer.company_name}</p>
-          <p><strong>Designation:</strong> {customer.designation}</p>
-          <p><strong>Location:</strong> {customer.location}</p>
-          <p><strong>Email:</strong> {customer.email}</p>
-          <p><strong>Created At:</strong> {new Date(customer.created_at).toLocaleString()}</p>
-        </div>
-
-        <div className="mb-4">
-          <h5 className="text-secondary">Contacts</h5>
-          <hr />
-          {customer.contacts && customer.contacts.length > 0 ? (
-            <ul className="list-group">
-              {customer.contacts.map((contact, index) => (
-                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                  <span><strong>{contact.contact_name}</strong></span>
-                  <span>{contact.contact_detail}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No contacts available.</p>
-          )}
-        </div>
-
-        <div className="text-start mt-3">
-          <button className="btn btn-secondary" onClick={() => navigate("/customers")}>
-            <i className="fas fa-arrow-left me-2"></i> Back to Customers
+    <div className="container py-3" style={{ maxWidth: "95%" }}>
+      <div
+        className="border rounded-4 shadow-sm p-4"
+        style={{ background: "transparent", border: "1px solid #ddd" }}
+      >
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="fw-bold mb-0">
+            <i className="bi bi-person-circle me-2"></i>Customer Details
+          </h4>
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            onClick={() => navigate("/customers")}
+          >
+            <i className="bi bi-arrow-left"></i> Back
           </button>
+        </div>
+
+        <div className="row g-4">
+          <div className="col-md-6">
+            {customer.company_name && (
+              <h5 className="fw-bold text-dark">
+                Company Name: {customer.company_name}
+              </h5>
+            )}
+            {renderField("Designation", customer.designation)}
+            {renderField("Location", customer.location)}
+            {renderField("Email", customer.email)}
+            {renderField(
+              "Created At",
+              new Date(customer.created_at).toLocaleString()
+            )}
+          </div>
+
+          <div className="col-md-6">
+            <h6 className="fw-bold text-dark mb-2">Contacts</h6>
+            {customer.contacts && customer.contacts.length > 0 ? (
+              <ul className="list-group">
+                {customer.contacts.map((contact, index) => (
+                  <li
+                    key={index}
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                  >
+                    <span className="fw-semibold">{contact.contact_name}</span>
+                    <span>{contact.contact_detail}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted">No contacts available.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
