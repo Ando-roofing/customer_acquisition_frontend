@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { FaTag, FaCashRegister, FaCheckCircle } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../styles/AddVisit.css";
+import "@styles/AddVisit.css";
 
 const STAGES = {
   PROPOSAL: "Proposal",
