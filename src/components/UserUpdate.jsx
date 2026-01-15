@@ -11,7 +11,7 @@ import {
   FaMapMarkerAlt,
   FaNetworkWired,
 } from "react-icons/fa";
-import "./../styles/AddVisit.css"; // ✅ Use same shared style
+// ✅ Use same shared style
 
 export default function UserUpdate() {
   const { id } = useParams();

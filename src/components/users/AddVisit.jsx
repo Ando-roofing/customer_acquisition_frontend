@@ -12,8 +12,8 @@ import {
   FaMapMarkerAlt,
   FaImage,
 } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@styles/AddVisit.css"; // ✅ Import custom style
+
+
 
 // Fix Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;

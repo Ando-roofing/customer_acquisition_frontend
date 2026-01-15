@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 

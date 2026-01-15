@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useTable, useSortBy, useGlobalFilter } from "react-table";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 
 // Global Filter + Add Submission Button
 function GlobalFilter({ globalFilter, setGlobalFilter }) {

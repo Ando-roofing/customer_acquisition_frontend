@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import "@styles/AddVisit.css"; // ✅ same shared style
+
 
 export default function UpdateCustomer() {
   const { id } = useParams();

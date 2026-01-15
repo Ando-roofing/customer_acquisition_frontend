@@ -12,8 +12,6 @@ import {
   FaDollarSign,
   FaBoxes,
 } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@styles/AddVisit.css";
 
 // Fix Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl;

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useTable, useSortBy, useGlobalFilter } from "react-table";
 import { useNavigate, Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 
 // Global filter + Add Customer link
 function GlobalFilter({ globalFilter, setGlobalFilter }) {

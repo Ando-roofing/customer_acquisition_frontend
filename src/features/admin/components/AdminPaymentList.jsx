@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useTable, useSortBy, useGlobalFilter } from "react-table";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 import { FaSearch } from "react-icons/fa";
 
 function GlobalFilter({ globalFilter, setGlobalFilter }) {

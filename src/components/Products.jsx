@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useTable, useSortBy, useGlobalFilter } from "react-table";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 
 function GlobalFilter({ globalFilter, setGlobalFilter }) {
   return (

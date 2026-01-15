@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "@styles/AddVisit.css"; // Use same styles as AddVisit
+ // Use same styles as AddVisit
 
 export default function AddCustomer() {
   const [companyName, setCompanyName] = useState("");

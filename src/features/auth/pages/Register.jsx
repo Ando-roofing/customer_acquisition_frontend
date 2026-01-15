@@ -10,8 +10,7 @@ import {
   FaBriefcase,
   FaMapMarkerAlt,
   FaNetworkWired,
-} from "react-icons/fa";
-import "@styles/AddVisit.css"; // ✅ Use same shared style
+} from "react-icons/fa"; 
 
 export default function Register() {
   const [formData, setFormData] = useState({

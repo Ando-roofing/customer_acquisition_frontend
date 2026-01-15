@@ -11,7 +11,7 @@ import {
   FaMapMarkerAlt,
   FaNetworkWired,
 } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
+
 
 export default function UserDetail() {
   const { id } = useParams();
