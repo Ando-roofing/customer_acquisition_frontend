@@ -1,17 +1,15 @@
 import { Outlet } from 'react-router-dom'
-import ProtectedRoute from '@core/auth/ProtectedRoute'
-// import UserNavbar from './UserNavbar'
+import Header from '@shared/components/Header'
+import Subheader from '@shared/components/Subheader'
+
 
 const UserLayout: React.FC = () => {
   return (
-    <ProtectedRoute>
-      <div className="user-layout">
-        {/* <UserNavbar /> */}
-        <main className="p-4">
-          <Outlet />
-        </main>
-      </div>
-    </ProtectedRoute>
+    <div className="page">
+        <Header />
+        <Subheader />
+        <Outlet />
+    </div>
   )
 }
 
