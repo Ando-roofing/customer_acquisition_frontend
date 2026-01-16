@@ -33,7 +33,7 @@ export default function ProtectedRoute({ children }: Props) {
 
   // Not authenticated
   if (!accessToken) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Authenticated

@@ -49,14 +49,17 @@ import UserVerificationMessage from '../features/users/UserMessage'
 import AuthLayout from '@shared/layouts/authLayout'
 import AdminLayout from '@shared/layouts/adminLayout'
 import UserLayout from '@shared/layouts/userLayout'
+import RootPage from '@features/auth/pages/RootPage'
 
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
 
+      <Route path="/" element={<RootPage/>} />
+
       {/* Auth */}
       <Route element={<AuthLayout />}>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
       </Route>
 
       <Route element={<AdminLayout />}>

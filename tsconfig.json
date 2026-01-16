@@ -22,6 +22,7 @@
       "@features/*": ["features/*"],
       "@store/*": ["store/*"],
       "@app/*": ["app/*"],
+      "@assets/*": ["assets/*"],
     },
 
     "isolatedModules": true,
