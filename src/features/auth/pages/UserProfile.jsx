@@ -2,7 +2,7 @@
 import React from "react";
 import Sidebar from "@shared/components/Sidebar";
 import Nav from "@shared/components/Nav";
-import UserProfile from "../../../components/Profile";
+import UserProfile from "../../profile/Profile";
 
 export default function Profile() {
   return (

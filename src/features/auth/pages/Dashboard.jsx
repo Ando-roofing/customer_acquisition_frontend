@@ -2,7 +2,7 @@
 import React from "react";
 import Sidebar from "@shared/components/Sidebar";
 import Nav from "@shared/components/Nav";
-import Card from "../../../components/Card"; // Cards without values
+import Card from "../../../shared/components/Card"; // Cards without values
 
 export default function Dashboard() {
   return (
