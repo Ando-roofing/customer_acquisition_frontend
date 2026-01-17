@@ -8,7 +8,7 @@ const AdminLayout: React.FC = () => {
   return (
       <div className="page">
         <Header />
-        <Subheader />
+        <Subheader UserRole="admin" />
         <Outlet />
       </div>
   )
