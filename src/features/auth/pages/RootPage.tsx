@@ -19,9 +19,9 @@ export default function RootPage() {
     }
 
     if (["Facilitator", "Product Brand Manager", "Zonal Sales Executive", "admin"].includes(user.position)) {
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to="/admin" replace />;
     } else if (["Corporate Officer", "Mobile Sales Officer", "Desk Sales Officer"].includes(user.position)) {
-        return <Navigate to="/add_visit" replace />;
+        return <Navigate to="/agent" replace />;
     } else {
         return <Navigate to="/index" replace />;
     }

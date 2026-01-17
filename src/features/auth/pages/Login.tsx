@@ -21,7 +21,7 @@ export default function Login() {
   // Redirect on successful login
   useEffect(() => {
     if (status === 'authenticated') {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [status, navigate]);
 

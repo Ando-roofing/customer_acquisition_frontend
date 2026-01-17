@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { useTable, useSortBy, useGlobalFilter } from "react-table";
 
 
 function GlobalFilter({ globalFilter, setGlobalFilter }) {
@@ -11,44 +10,46 @@ function GlobalFilter({ globalFilter, setGlobalFilter }) {
         value={globalFilter || ""}
         onChange={(e) => setGlobalFilter(e.target.value)}
         className="form-control d-inline-block w-auto"
-        placeholder="Search products"
+        placeholder="Search branches"
       />
     </span>
   );
 }
 
-function Product() {
-  const [products, setProducts] = useState([]);
+function Branch() {
+  const [branches, setBranches] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
   const token = localStorage.getItem("accessToken");
 
-  // Fetch products
-  const fetchProducts = async () => {
+  // Fetch branches
+  const fetchBranches = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/products/products/", {
+      const res = await axios.get("http://127.0.0.1:8000/accounts/branches/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setProducts(res.data);
+      setBranches(res.data);
     } catch (err) {
-      console.error("Error fetching products:", err);
+      console.error("Error fetching branches:", err);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchBranches();
   }, []);
 
-  const openModal = (product = null) => {
-    if (product) {
-      setName(product.name);
-      setEditingId(product.id);
+  const openModal = (branch = null) => {
+    if (branch) {
+      setName(branch.name);
+      setEditingId(branch.id);
     } else {
       setName("");
       setEditingId(null);
     }
+    setError("");
     setModalOpen(true);
   };
 
@@ -64,46 +65,45 @@ function Product() {
     setError("");
 
     if (!name.trim()) {
-      setError("Product name is required.");
+      setError("Branch name is required.");
       return;
     }
 
     try {
       if (editingId) {
         await axios.put(
-          `http://127.0.0.1:8000/products/products/${editingId}/update/`,
+          `http://127.0.0.1:8000/accounts/branches/${editingId}/update/`,
           { name },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          "http://127.0.0.1:8000/products/products/create/",
+          "http://127.0.0.1:8000/accounts/branches/create/",
           { name },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-      fetchProducts();
+      fetchBranches();
       closeModal();
     } catch (err) {
       setError(
-        err.response?.data?.name?.[0] || "Failed to save product. Please try again."
+        err.response?.data?.name?.[0] || "Failed to save branch. Please try again."
       );
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!window.confirm("Are you sure you want to delete this branch?")) return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/products/products/${id}/delete/`, {
+      await axios.delete(`http://127.0.0.1:8000/accounts/branches/${id}/delete/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchProducts();
+      fetchBranches();
     } catch (err) {
-      console.error("Error deleting product:", err);
+      console.error("Error deleting branch:", err);
     }
   };
 
-  // React Table
   const columns = useMemo(
     () => [
       {
@@ -142,76 +142,66 @@ function Product() {
         ),
       },
     ],
-    [products]
+    [branches]
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state,
-    setGlobalFilter,
-  } = useTable(
-    { columns, data: products },
-    useGlobalFilter,
-    useSortBy
+  // Filter & sort
+  const filteredBranches = branches.filter((b) =>
+    b.name.toLowerCase().includes(globalFilter.toLowerCase())
   );
 
   return (
     <div className="page-wrapper">
     <div className="container mt-4">
       <h3 className="mb-3 fw-bold text-teal-700">
-        <i className="fas fa-box-open me-2 text-primary"></i>
-        Product Management
+        <i className="fas fa-code-branch me-2 text-primary"></i> Branch Management
       </h3>
 
       <button className="btn btn-success mb-2" onClick={() => openModal()}>
-        <i className="fas fa-plus me-2"></i> Add Product
+        <i className="fas fa-plus me-2"></i> Add Branch
       </button>
 
-      <GlobalFilter globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
+      <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
 
       <div className="table-responsive">
-        <table {...getTableProps()} className="table table-hover align-middle">
+        <table className="table table-hover align-middle">
           <thead className="table-light">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                    className="text-nowrap"
-                  >
-                    {column.render("Header")}
-                    <span>
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? " 🔽"
-                          : " 🔼"
-                        : ""}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            ))}
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Created</th>
+              <th>Updated</th>
+              <th className="text-end">Actions</th>
+            </tr>
           </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.length > 0 ? (
-              rows.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    ))}
-                  </tr>
-                );
-              })
+          <tbody>
+            {filteredBranches.length > 0 ? (
+              filteredBranches.map((branch, index) => (
+                <tr key={branch.id}>
+                  <td>{index + 1}</td>
+                  <td>{branch.name}</td>
+                  <td>{new Date(branch.created_at).toLocaleString()}</td>
+                  <td>{new Date(branch.updated_at).toLocaleString()}</td>
+                  <td className="text-end">
+                    <button
+                      className="btn btn-sm btn-outline-primary me-2"
+                      onClick={() => openModal(branch)}
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleDelete(branch.id)}
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="text-center text-muted">
-                  No products found.
+                <td colSpan={5} className="text-center text-muted">
+                  No branches found.
                 </td>
               </tr>
             )}
@@ -230,16 +220,14 @@ function Product() {
             <div className="modal-content">
               <form onSubmit={handleSubmit}>
                 <div className="modal-header">
-                  <h5 className="modal-title">
-                    {editingId ? "Update Product" : "Add Product"}
-                  </h5>
+                  <h5 className="modal-title">{editingId ? "Update Branch" : "Add Branch"}</h5>
                   <button type="button" className="btn-close" onClick={closeModal}></button>
                 </div>
                 <div className="modal-body">
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Enter product name"
+                    placeholder="Enter branch name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -263,4 +251,4 @@ function Product() {
   );
 }
 
-export { Product };
+export { Branch };
