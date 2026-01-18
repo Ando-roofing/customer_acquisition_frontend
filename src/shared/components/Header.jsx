@@ -1,5 +1,6 @@
 import logo from '@assets/images/logo/ando-logo-small.svg';
 import { useAppSelector } from '@store/hooks';
+import { Link } from 'react-router-dom';
 
 function Header() {
 
@@ -226,11 +227,11 @@ function Header() {
                         </a>
                         <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                             <span className="dropdown-item text-black bg-secondary-lt">{user?.email}</span>
-                            <a href="profile.html" className="dropdown-item">Profile</a>
+                            <Link to="/profile" className="dropdown-item">Profile</Link>
 
                             <div className="dropdown-divider"></div>
-                            <a href="settings.html" className="dropdown-item">Settings</a>
-                            <a href="sign-in.html" className="dropdown-item">Logout</a>
+                            <Link to="/settings" className="dropdown-item">Settings</Link>
+                            <a className="dropdown-item">Logout</a>
                         </div>
                     </div>
                 </div>

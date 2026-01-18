@@ -1,15 +1,5 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import ProtectedRoute from '@core/auth/ProtectedRoute'
-
-// Auth
-
-import Login from '../features/auth/pages/Login'
-import Profile from '../features/auth/pages/UserProfile'
-
-// Admin
-
-
-
 
 
 // User
@@ -26,16 +16,17 @@ import SubmitVerifications from '../features/agents/visit/SubmitVerification'
 import VisitVerificationLisit from '../features/agents/visit/VisitVerificationList'
 import VerificationDetail from '../features/agents/visit/VerificationDetails'
 
+import Login from '../features/auth/pages/Login'
 
 import RootPage from '@features/auth/pages/RootPage'
+
+import Profile from '@features/profile/Profile'
 
 import { Layout as SettingLayout } from '@features/settings/layout'
 import ChangePassword from '@features/settings/ChangePassword'
 
 import AuthLayout from '@features/auth/authLayout'
-import AdminLayout from '@features/admin/adminLayout'
-
-
+import { Layout as AdminLayout } from '@features/admin/layout'
 
 import { Layout as AdminConfigurationLayout } from '@features/admin/configuration/layout'
 
@@ -72,11 +63,9 @@ import { Layout as AdminPaymentLayout } from '@features/admin/payment/layout'
 import { Home as AdminPaymentHome } from '@features/admin/payment/home/home'
 import UserVerificationMessage from '@features/agents/visit/UserVerificationmessage'
 
-
 import { Layout as AgentLayout } from '@features/agents/layout'
-import Dashboard from '@features/admin/dashboard/Dashboard'
 
-
+import Dashboard from '@features/admin/dashboard/dashboard'
 
 
 
@@ -84,7 +73,7 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
 
-      <Route path="" element={<RootPage />} />
+      <Route index element={<RootPage />} />
 
       {/* Auth */}
       <Route element={<AuthLayout />}>
@@ -98,11 +87,12 @@ const AppRoutes: React.FC = () => {
       </Route>
 
       <Route path="admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-        <Route path="" element={<Dashboard />} />
+        <Route index element={<Dashboard />} />
 
         <Route path="configuration" element={<AdminConfigurationLayout />}>
+          <Route index element={<Navigate to="users" replace />} />
           <Route path="users" element={<AdminConfigurationUserLayout />}>
-            <Route path="" element={<AdminConfigurationUserHome />} />
+            <Route index element={<AdminConfigurationUserHome />} />
             <Route path="create" element={<AdminConfigurationUserCreate />} />
             <Route path=":id" element={<AdminConfigurationUserSingle />} />
             <Route path=":id/update" element={<AdminConfigurationUserUpdate />} />
@@ -114,7 +104,7 @@ const AppRoutes: React.FC = () => {
         </Route>
 
         <Route path="visits" element={<AdminVisitsLayout />}>
-          <Route path="" element={<AdminVisitsHome />} />
+          <Route index element={<AdminVisitsHome />} />
           <Route path=":id" element={<AdminVisitSingle />} />
           <Route path=":visitId/verification" element={<AdminVisitVerificationHome />} />
           <Route path=":visitId/verification/:id" element={<AdminVisitVerificationSingle />} />
@@ -123,16 +113,16 @@ const AppRoutes: React.FC = () => {
         </Route>
 
         <Route path="sales" element={<AdminSalesLayout />}>
-          <Route path="" element={<AdminSalesHome/>} />
+          <Route index element={<AdminSalesHome/>} />
           <Route path=":id" element={<AdminSalesSingle />} />
         </Route>
 
         <Route path="payment" element={<AdminPaymentLayout />}>
-          <Route path="" element={<AdminPaymentHome />} />
+          <Route index element={<AdminPaymentHome />} />
         </Route>
 
         <Route path="customers" element={<AdminCustomerLayout />}>
-          <Route path="" element={<AdminCustomerHome />} />
+          <Route index element={<AdminCustomerHome />} />
           <Route path="new" element={<AdminCustomerNew />} />
           <Route path=":id" element={<AdminCustomerSingle />} />
           <Route path=":id/update" element={<AdminCustomerUpdate />} />
@@ -143,12 +133,12 @@ const AppRoutes: React.FC = () => {
       <Route path="agent" element={<ProtectedRoute><AgentLayout /></ProtectedRoute>}>
 
         <Route path="visit" >
-          <Route path="" element={<VisitList />} />
+          <Route index element={<VisitList />} />
           <Route path="new" element={<AddVisits />} />
           <Route path=":id" element={<VisitDetail />} />
           <Route path=":id/update" element={<UpdateVisits />} />
           <Route path=":id/verification">
-            <Route path="" element={<VisitVerificationLisit />} />
+            <Route index element={<VisitVerificationLisit />} />
             <Route path="submit" element={<SubmitVerifications />} />
             <Route path=":id" element={<VerificationDetail />} />
             <Route path="message/:id" element={<UserVerificationMessage />} />
@@ -157,12 +147,12 @@ const AppRoutes: React.FC = () => {
 
         <Route path="sales">
           <Route path="new" element={<CreateSales />} />
-          <Route path="" element={<SalesLists />} />
+          <Route index element={<SalesLists />} />
           <Route path=":id" element={<SalesDetail />} />
         </Route>
 
         <Route path="payments">
-          <Route path="" element={<Payments />} />
+          <Route index element={<Payments />} />
           <Route path="customer/:customer_id" element={<PaymentDetail />} />
         </Route>
 

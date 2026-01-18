@@ -1,13 +1,16 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AdminMenu from './adminMenu';
 import AgentMenu from './agentMenu';
+import { isRouteActive } from '@shared/utils/menu.utils';
 
 export type UserRole = 'admin' | 'agent';
+
 type SubHeaderProps = {
   UserRole: UserRole;
 };
 
 function SubHeader({ UserRole }: SubHeaderProps) {
+  const { pathname } = useLocation();
   return (<header className="navbar-expand-md">
     <div className="collapse navbar-collapse" id="navbar-menu">
       <div className="navbar">
@@ -19,12 +22,13 @@ function SubHeader({ UserRole }: SubHeaderProps) {
               {UserRole === 'agent' && <AgentMenu />}
               {/* END NAVBAR MENU */}
             </div>
+            {UserRole === 'admin' && (
             <div className="col col-md-auto">
               <ul className="navbar-nav">
-                <li className="nav-item">
+                <li className={`nav-item ${isRouteActive(pathname, '/admin/configuration') ? 'active' : ''}`}>
                   <Link
                     className="nav-link "
-                    to="/configuration"  >
+                    to="/admin/configuration"  >
 
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
 
@@ -51,6 +55,8 @@ function SubHeader({ UserRole }: SubHeaderProps) {
                 </li>
               </ul>
             </div>
+            )
+            }
 
           </div>
         </div>

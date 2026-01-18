@@ -1,0 +1,10 @@
+.col-docs {
+    width: 15rem !important;
+    min-height: 100vh;
+}
+
+@media (min-width: 992px) {
+    .bg-docs-gradient {
+        background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--tblr-primary) 4%,transparent),transparent 80%) no-repeat 0 0/800px 800px!important
+    }
+}

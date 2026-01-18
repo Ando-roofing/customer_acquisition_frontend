@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-function UserProfile() {
+function Profile() {
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("accessToken");
 
@@ -22,6 +22,7 @@ function UserProfile() {
   if (!user) return <p>Loading...</p>;
 
   return (
+    <div className="page-wrapper">
     <div className="container mt-4">
       <h3>User Profile</h3>
       <p><strong>Email:</strong> {user.email}</p>
@@ -33,7 +34,8 @@ function UserProfile() {
       <p><strong>Contact:</strong> {user.contact}</p>
       <p><strong>Date Joined:</strong> {new Date(user.date_joined).toLocaleString()}</p>
     </div>
+    </div>
   );
 }
 
-export default UserProfile;
+export default Profile;

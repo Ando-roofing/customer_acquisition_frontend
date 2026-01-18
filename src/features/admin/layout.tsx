@@ -1,10 +1,9 @@
 import { Outlet } from 'react-router-dom'
-import ProtectedRoute from '@core/auth/ProtectedRoute'
 import Header from '@shared/components/Header'
 import Subheader from '@shared/components/Subheader'
 
 
-const AdminLayout: React.FC = () => {
+const Layout: React.FC = () => {
   return (
       <div className="page">
         <Header />
@@ -14,4 +13,4 @@ const AdminLayout: React.FC = () => {
   )
 }
 
-export default AdminLayout
+export { Layout }
