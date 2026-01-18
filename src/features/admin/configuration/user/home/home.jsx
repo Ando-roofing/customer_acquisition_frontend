@@ -9,19 +9,37 @@ import { useNavigate, Link } from "react-router-dom";
 // Global filter + Add User link
 function GlobalFilter({ globalFilter, setGlobalFilter }) {
   return (
-    <div className="d-flex justify-content-between align-items-center mb-3">
-      <div>
-        Search:{" "}
-        <input
-          value={globalFilter || ""}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="form-control d-inline-block w-auto"
-          placeholder="Search users"
-        />
+    <div className="">
+      <div className="row g-2">
+        <div className="col">
+          <input
+            value={globalFilter || ""}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="form-control d-inline-block w-auto"
+            placeholder="Search users"
+          />
+        </div>
+        <div className="col-auto">
+          <a  className="btn btn-2 btn-icon" aria-label="Button">
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="icon icon-2"
+            >
+              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+              <path d="M21 21l-6 -6" />
+            </svg>
+          </a>
+        </div>
       </div>
-      <Link to="/add-user" className="btn btn-success">
-        Add User
-      </Link>
     </div>
   );
 }
@@ -78,18 +96,18 @@ export function Home() {
         Cell: ({ row }) => (
           <div className="d-flex justify-content-end">
             <Link
-  to={`/users-details/${row.original.id}`}
-  className="btn btn-sm btn-outline-info me-2"
->
-  View Details
-</Link>
+              to={`/users-details/${row.original.id}`}
+              className="btn btn-sm btn-outline-info me-2"
+            >
+              View Details
+            </Link>
             {/* Replace the navigate button with Link */}
-      <Link
-        to={`/users-update/${row.original.id}/update`}
-        className="btn btn-sm btn-outline-warning me-2"
-      >
-        Edit
-      </Link>
+            <Link
+              to={`/users-update/${row.original.id}/update`}
+              className="btn btn-sm btn-outline-warning me-2"
+            >
+              Edit
+            </Link>
             <button
               className="btn btn-sm btn-outline-danger"
               onClick={() => handleDelete(row.original.id)}
@@ -114,53 +132,97 @@ export function Home() {
   } = useTable({ columns, data: users }, useGlobalFilter, useSortBy);
 
   return (
-    <div className="page-wrapper">
-    <div className="container mt-4">
-      <h3 className="mb-3 fw-bold text-primary">User Management</h3>
+    <div>
+      <div className="page-header d-print-none">
+        <div className="container-xl">
+          <div className="row g-2 align-items-center">
+            <div className="col">
+              {/* Page pre-title */}
+              <div className="page-pretitle">Configuration</div>
+              <h1 className="page-title">User Management</h1>
+            </div>
+            {/* Page title actions */}
+            <div className="col-auto ms-auto d-print-none">
+              <div className="btn-list">
+                <GlobalFilter globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} className="me-3"/>
 
-      <GlobalFilter globalFilter={state.globalFilter} setGlobalFilter={setGlobalFilter} />
+                <Link to="/admin/configuration/users/new" className="btn btn-primary btn-5 d-none d-sm-inline-block">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                  className="icon icon-2"
+                >
+                  <path d="M12 5l0 14" />
+                  <path d="M5 12l14 0" />
+                </svg> Add User
+                </Link>
 
-      <div className="table-responsive">
-        <table {...getTableProps()} className="table table-hover align-middle">
-          <thead className="table-light">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                {headerGroup.headers.map((column) => (
-                  <th
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                    key={column.id}
-                  >
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.length ? (
-              rows.map((row, idx) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()} key={row.index}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()} key={cell.column.id}>
-                        {cell.render("Cell")}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={columns.length} className="text-center text-muted">
-                  No users found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              </div>
+              {/* BEGIN MODAL */}
+              {/* END MODAL */}
+            </div>
+          </div>
+        </div>
       </div>
+      <main id="content" className="page-body">
+        <div className="container">
+      
+
+
+          <div className="card">
+            <div className="table-responsive">
+              <table {...getTableProps()} className="table table-hover align-middle">
+                <thead className="table-light">
+                  {headerGroups.map((headerGroup) => (
+                    <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+                      {headerGroup.headers.map((column) => (
+                        <th
+                          {...column.getHeaderProps(column.getSortByToggleProps())}
+                          key={column.id}
+                        >
+                          {column.render("Header")}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                  {rows.length ? (
+                    rows.map((row, idx) => {
+                      prepareRow(row);
+                      return (
+                        <tr {...row.getRowProps()} key={row.index}>
+                          {row.cells.map((cell) => (
+                            <td {...cell.getCellProps()} key={cell.column.id}>
+                              {cell.render("Cell")}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center text-muted">
+                        No users found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-    </div>
+
   );
 }

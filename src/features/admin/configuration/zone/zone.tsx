@@ -1,8 +1,6 @@
-import { useNavigate, Link } from "react-router-dom";
-
-function Company() {
+function Zone() {
     return (
-        < div >
+    < div >
             <div className="page-header d-print-none">
                 <div className="container-xl">
                     <div className="row g-2 align-items-center">
@@ -33,7 +31,7 @@ function Company() {
                                     >
                                         <path d="M12 5l0 14" />
                                         <path d="M5 12l14 0" />
-                                    </svg> New Company
+                                    </svg> New
                                 </button>
 
                             </div>
@@ -45,11 +43,11 @@ function Company() {
             </div>
             <main id="content" className="page-body">
                 <div className="container">
-                    Company
+                    Zone
                 </div>
             </main>
         </div >
-    );
+        )
 }
 
-export { Company };
+export { Zone };

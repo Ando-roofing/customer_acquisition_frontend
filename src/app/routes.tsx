@@ -39,6 +39,7 @@ import { UpdatePassword as UpdateUserPassword} from '@features/admin/configurati
 
 import { Branch as AdminConfigurationBranch } from '@features/admin/configuration/branch/Branch'
 import { Company as AdminConfigurationCompany } from '@features/admin/configuration/company/company'
+import { Zone as AdminConfigurationZone } from '@features/admin/configuration/zone/zone'
 import { Product as AdminConfigurationProducts } from '@features/admin/configuration/product/Products'
 
 import { Layout as AdminVisitsLayout } from '@features/admin/visits/layout'
@@ -93,12 +94,13 @@ const AppRoutes: React.FC = () => {
           <Route index element={<Navigate to="users" replace />} />
           <Route path="users" element={<AdminConfigurationUserLayout />}>
             <Route index element={<AdminConfigurationUserHome />} />
-            <Route path="create" element={<AdminConfigurationUserCreate />} />
+            <Route path="new" element={<AdminConfigurationUserCreate />} />
             <Route path=":id" element={<AdminConfigurationUserSingle />} />
             <Route path=":id/update" element={<AdminConfigurationUserUpdate />} />
             <Route path=":id/change-password" element={ <UpdateUserPassword />} />
           </Route>
           <Route path="company" element={<AdminConfigurationCompany />}/>
+          <Route path="zone" element={<AdminConfigurationZone />}/>
           <Route path="branch" element={<AdminConfigurationBranch />}/>
           <Route path="products" element={<AdminConfigurationProducts />}/>
         </Route>

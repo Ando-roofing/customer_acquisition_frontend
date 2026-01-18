@@ -20,7 +20,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter }) {
           />
         </div>
         <div className="col-auto">
-          <a href="form-elements.html#" className="btn btn-2 btn-icon" aria-label="Button">
+          <a  className="btn btn-2 btn-icon" aria-label="Button">
 
             <svg
               xmlns="http://www.w3.org/2000/svg"
