@@ -106,7 +106,7 @@ export const New: React.FC = () => {
 
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">
+                    <label className="form-label">
                       <i className="fas fa-building me-2"></i>Customer Name
                     </label>
                     <input
@@ -121,7 +121,7 @@ export const New: React.FC = () => {
 
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">
+                    <label className="form-label">
                       <i className="fas fa-users me-2"></i> Customer Type
                     </label>
                     <select
@@ -138,7 +138,7 @@ export const New: React.FC = () => {
 
                   {customerType === "Company" && (
                     <div className="mb-3">
-                      <label className="form-label fw-semibold">
+                      <label className="form-label">
                         <i className="fas fa-id-badge me-2"></i> Designation
                       </label>
                       <select
@@ -157,7 +157,7 @@ export const New: React.FC = () => {
 
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">
+                    <label className="form-label">
                       <i className="fas fa-map-marker-alt me-2"></i> Location
                     </label>
                     <input
@@ -171,7 +171,7 @@ export const New: React.FC = () => {
 
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">
+                    <label className="form-label">
                       <i className="fas fa-envelope me-2"></i> Email
                     </label>
                     <input
@@ -192,7 +192,7 @@ export const New: React.FC = () => {
                 </div>
                 <div className="card-body">
                   {/* Contacts */}
-                  <label className="form-label fw-semibold">
+                  <label className="form-label">
                     Contacts
                   </label>
                   {contacts.map((contact, index) => (

@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
 
-export default function SaleDetail() {
+export function Single() {
   const { id } = useParams();
   const token = localStorage.getItem("accessToken");
 

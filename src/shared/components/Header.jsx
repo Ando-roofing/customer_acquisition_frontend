@@ -30,11 +30,42 @@ function Header() {
                     </a>
                 </div>
                 {/* END NAVBAR LOGO */}
+
+
                 <div className="navbar-nav flex-row order-md-last">
-              
+                    <div class="nav-item d-none d-md-flex me-5">
+                        <div class="btn-list">
+                            <select class="form-select" id="select-people" value="">
+                                <option
+                                    value="0"
+                                    data-custom-properties="&lt;span class=&#34;avatar avatar-xs&#34; style=&#34;background-image: url(./static/avatars/000m.jpg)&#34;&gt;&lt;/span&gt;"
+                                >
+                                    Filter By Company
+                                </option>
+                                <option
+                                    value="1"
+                                    data-custom-properties="&lt;span class=&#34;avatar avatar-xs&#34; style=&#34;background-image: url(./static/avatars/000m.jpg)&#34;&gt;&lt;/span&gt;"
+                                >
+                                    ANDO
+                                </option>
+                                <option
+                                    value="2"
+                                    data-custom-properties="&lt;span class=&#34;avatar avatar-xs&#34; style=&#34;background-image: url(./static/avatars/007m.jpg)&#34;&gt;&lt;/span&gt;"
+                                >
+                                    KAM
+                                </option>
+                                <option
+                                  value="3"
+                                  data-custom-properties="&lt;span class=&#34;avatar avatar-xs&#34; style=&#34;background-image: url(./static/avatars/052f.jpg)&#34;&gt;&lt;/span&gt;"
+                                >
+                                  MATE
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                     <div className="d-none d-md-flex">
                         <div className="nav-item">
-                     
+
                             <a href="https://preview.tabler.io/empty.html?theme=light" className="nav-link px-0 hide-theme-light" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
                                 {/* Download SVG icon from http://tabler.io/icons/icon/sun */}
                                 <svg
@@ -215,11 +246,11 @@ function Header() {
                                 </div>
                             </div>
                         </div>
-                  
+
                     </div>
                     <div className="nav-item dropdown">
                         <a href="empty.html#" className="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
-                            <span className="avatar avatar-sm" style={{backgroundImage: 'url(./static/avatars/000m.jpg)'}}> {user?.first_name?.charAt(0).toUpperCase()}{user?.last_name?.charAt(0).toUpperCase()}</span>
+                            <span className="avatar avatar-sm" style={{ backgroundImage: 'url(./static/avatars/000m.jpg)' }}> {user?.first_name?.charAt(0).toUpperCase()}{user?.last_name?.charAt(0).toUpperCase()}</span>
                             <div className="d-none d-xl-block ps-2">
                                 <div>{user?.first_name?.charAt(0).toUpperCase() + user?.first_name?.slice(1)} {user?.last_name?.charAt(0).toUpperCase() + user?.last_name?.slice(1)}</div>
                                 <div className="mt-1 small text-secondary">{user?.position?.charAt(0).toUpperCase() + user?.position?.slice(1)} </div>

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 
-export default function PaymentDetails() {
+export function Single() {
   const { customer_id } = useParams();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -22,7 +22,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-export default function VisitUpdate() {
+export function Update() {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("accessToken");
@@ -195,7 +195,7 @@ export default function VisitUpdate() {
 
         <div className="card-body p-0">
           <div className="mb-3">
-            <label className="form-label fw-semibold">Company Name</label>
+            <label className="form-label">Company Name</label>
             <input
               type="text"
               className="form-control subtle-border"
@@ -205,7 +205,7 @@ export default function VisitUpdate() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">Item Discussed</label>
+            <label className="form-label">Item Discussed</label>
             <textarea
               className="form-control subtle-border"
               rows="3"
@@ -217,7 +217,7 @@ export default function VisitUpdate() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">Select Location</label>
+            <label className="form-label">Select Location</label>
             <div className="rounded-4 overflow-hidden subtle-border">
               <MapContainer
                 center={[formData.latitude || -6.8, formData.longitude || 39.2]}
@@ -236,7 +236,7 @@ export default function VisitUpdate() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaImage className="me-2 text-secondary" /> Visit Image
             </label>
             <input
@@ -252,7 +252,7 @@ export default function VisitUpdate() {
                 <FaDollarSign className="me-2" /> Client Budget & Products
               </h6>
               <div className="mb-3">
-                <label className="form-label fw-semibold">Client Budget</label>
+                <label className="form-label">Client Budget</label>
                 <input
                   type="number"
                   className="form-control subtle-border"
@@ -264,7 +264,7 @@ export default function VisitUpdate() {
 
               {/* ✅ Simplified Multi-Product Selector */}
               <div className="mb-3">
-                <label className="form-label fw-semibold">
+                <label className="form-label">
                   <FaBoxes className="me-2 text-secondary" /> Products Interested
                 </label>
 

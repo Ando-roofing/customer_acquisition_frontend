@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom'
 
 const AuthLayout: React.FC = () => {
   return (
-    <div className="page page-center">
+    <div className="page page-center" style={{ height: '100vh' }}>
       <div className="container container-tight py-4">
         <div className="text-center mb-4">
             <a href="." aria-label="Tabler" className="navbar-brand navbar-brand-autodark"><svg

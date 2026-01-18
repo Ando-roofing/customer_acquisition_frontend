@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
 
-export default function VisitDetails() {
+export function Single() {
   const { id } = useParams();
   const [visit, setVisit] = useState(null);
   const [loading, setLoading] = useState(true);

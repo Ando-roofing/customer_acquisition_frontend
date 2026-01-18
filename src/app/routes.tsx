@@ -3,15 +3,15 @@ import ProtectedRoute from '@core/auth/ProtectedRoute'
 
 
 // User
-import AddVisits from '../features/agents/visit/AddVisits'
-import VisitList from '../features/agents/visit/VisitLisit'
-import VisitDetail from '../features/agents/visit/VisitDetails'
-import UpdateVisits from '../features/agents/visit/UpdateVisits'
-import CreateSales from '../features/agents/sale/CreateSales'
-import SalesLists from '../features/agents/sale/SalesList'
-import SalesDetail from '../features/agents/sale/SalesDetails'
-import Payments from '../features/agents/payment/PaymentsList'
-import PaymentDetail from '../features/agents/payment/PaymentDetails'
+import AddVisits from '../features/agents/visit/new/new'
+import VisitList from '../features/agents/visit/home/home'
+import VisitDetail from '../features/agents/visit/single/single'
+import UpdateVisits from '../features/agents/visit/update/update'
+import CreateSales from '../features/agents/sale/new/new'
+import SalesLists from '../features/agents/sale/home/home'
+import SalesDetail from '../features/agents/sale/single/single'
+import Payments from '../features/agents/payment/home/home'
+import PaymentDetail from '../features/agents/payment/single/single'
 import SubmitVerifications from '../features/agents/visit/SubmitVerification'
 import VisitVerificationLisit from '../features/agents/visit/VisitVerificationList'
 import VerificationDetail from '../features/agents/visit/VerificationDetails'
@@ -55,10 +55,10 @@ import { Home as AdminSalesHome } from '@features/admin/sales/home/home'
 import { Single as AdminSalesSingle } from '@features/admin/sales/single/single'
 
 import { Layout as AdminCustomerLayout } from '@features/admin/customer/layout'
-import { Single as AdminCustomerSingle } from '../features/admin/customer/single/single'
-import { New as AdminCustomerNew } from '../features/admin/customer/new/new'
+import { Single as AdminCustomerSingle } from '@features/admin/customer/single/single'
+import { New as AdminCustomerNew } from '@features/admin/customer/new/new'
 import { Update as AdminCustomerUpdate } from '@features/admin/customer/update/update'
-import { Home as AdminCustomerHome } from '../features/admin/customer/home/home'
+import { Home as AdminCustomerHome } from '@features/admin/customer/home/home'
 
 import { Layout as AdminPaymentLayout } from '@features/admin/payment/layout'
 import { Home as AdminPaymentHome } from '@features/admin/payment/home/home'
@@ -67,6 +67,20 @@ import UserVerificationMessage from '@features/agents/visit/UserVerificationmess
 import { Layout as AgentLayout } from '@features/agents/layout'
 
 import Dashboard from '@features/admin/dashboard/dashboard'
+import { Layout as AgentVisitLayout } from '@features/agents/visit/layout'
+import { Home as AgentVisitHome } from '@features/agents/visit/home/home'
+import { New as AgentVisitNew } from '@features/agents/visit/new/new'
+import { Update as AgentVisitUpdate } from '@features/agents/visit/update/update'
+import { Single as AgentVisitSingle } from '@features/agents/visit/single/single'
+
+import { Layout as AgentSaleLayout } from '@features/agents/sale/layout'
+import { Home as AgentSaleHome } from '@features/agents/sale/home/home'
+import { Single as AgentSaleSingle } from '@features/agents/sale/single/single'
+import { New as AgentSaleNew } from '@features/agents/sale/new/new'
+
+import { Layout as AgentPaymentLayout } from '@features/agents/payment/layout'
+import { Single as AgentPaymentSingle } from '../features/agents/payment/single/single'
+import { Home as AgentPaymentHome } from '../features/agents/payment/home/home'
 
 
 
@@ -133,12 +147,12 @@ const AppRoutes: React.FC = () => {
       </Route>
 
       <Route path="agent" element={<ProtectedRoute><AgentLayout /></ProtectedRoute>}>
-
-        <Route path="visit" >
-          <Route index element={<VisitList />} />
-          <Route path="new" element={<AddVisits />} />
-          <Route path=":id" element={<VisitDetail />} />
-          <Route path=":id/update" element={<UpdateVisits />} />
+        <Route index element={<Navigate to="visit" replace />} />
+        <Route path="visit" element={<AgentVisitLayout />}>
+          <Route index element={<AgentVisitHome />} />
+          <Route path="new" element={<AgentVisitNew />} />
+          <Route path=":id" element={<AgentVisitSingle />} />
+          <Route path=":id/update" element={<AgentVisitUpdate />} />
           <Route path=":id/verification">
             <Route index element={<VisitVerificationLisit />} />
             <Route path="submit" element={<SubmitVerifications />} />
@@ -147,15 +161,15 @@ const AppRoutes: React.FC = () => {
           </Route>
         </Route>
 
-        <Route path="sales">
-          <Route path="new" element={<CreateSales />} />
-          <Route index element={<SalesLists />} />
-          <Route path=":id" element={<SalesDetail />} />
+        <Route path="sale" element={<AgentSaleLayout />}>
+          <Route index element={<AgentSaleHome />} />
+          <Route path="new" element={<AgentSaleNew />} />
+          <Route path=":id" element={<AgentSaleSingle />} />
         </Route>
 
-        <Route path="payments">
-          <Route index element={<Payments />} />
-          <Route path="customer/:customer_id" element={<PaymentDetail />} />
+        <Route path="payment" element={<AgentPaymentLayout />}>
+          <Route index element={<AgentPaymentHome />} />
+          <Route path="customer/:customer_id" element={<AgentPaymentSingle />} />
         </Route>
 
       </Route>

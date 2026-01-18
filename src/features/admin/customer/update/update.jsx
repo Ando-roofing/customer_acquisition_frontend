@@ -94,7 +94,7 @@ export function Update() {
         <form onSubmit={handleSubmit}>
           {/* Company Name */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <i className="fas fa-building me-2"></i> Company Name
             </label>
             <input
@@ -109,7 +109,7 @@ export function Update() {
 
           {/* Designation */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <i className="fas fa-id-badge me-2"></i> Designation
             </label>
             <select
@@ -127,7 +127,7 @@ export function Update() {
 
           {/* Location */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <i className="fas fa-map-marker-alt me-2"></i> Location
             </label>
             <input
@@ -141,7 +141,7 @@ export function Update() {
 
           {/* Email */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <i className="fas fa-envelope me-2"></i> Email
             </label>
             <input

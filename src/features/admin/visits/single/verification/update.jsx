@@ -78,7 +78,7 @@ export function Update() {
         <form onSubmit={handleSubmit}>
           {/* Status Selection */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">Status</label>
+            <label className="form-label">Status</label>
             <select
               className="form-select border-0 border-bottom bg-transparent subtle-border"
               value={status}
@@ -94,7 +94,7 @@ export function Update() {
 
           {/* Supervisor Message */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">Supervisor Message (Comment)</label>
+            <label className="form-label">Supervisor Message (Comment)</label>
             <textarea
               className="form-control border-0 border-bottom bg-transparent subtle-border"
               rows="4"

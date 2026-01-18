@@ -120,7 +120,7 @@ export function Update() {
         <form onSubmit={handleSubmit}>
           {/* First and Last Name */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaUser className="me-2" /> First Name
             </label>
             <input
@@ -145,7 +145,7 @@ export function Update() {
 
           {/* Email */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaEnvelope className="me-2" /> Email
             </label>
             <input
@@ -161,7 +161,7 @@ export function Update() {
 
           {/* Contact */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaPhone className="me-2" /> Contact
             </label>
             <input
@@ -176,7 +176,7 @@ export function Update() {
 
           {/* Company */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaBuilding className="me-2" /> Company
             </label>
             <select
@@ -195,7 +195,7 @@ export function Update() {
 
           {/* Position */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaBriefcase className="me-2" /> Position
             </label>
             <select
@@ -226,7 +226,7 @@ export function Update() {
 
           {/* Zone */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaMapMarkerAlt className="me-2" /> Zone
             </label>
             <select
@@ -254,7 +254,7 @@ export function Update() {
 
           {/* Branch */}
           <div className="mb-4">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaNetworkWired className="me-2" /> Branch
             </label>
             <select

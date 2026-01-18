@@ -90,7 +90,7 @@ export default function SubmitVerification() {
         <form onSubmit={handleSubmit}>
           {/* Visit Selection */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaEnvelope className="me-2 text-secondary" /> Select Visit
             </label>
             <select
@@ -110,7 +110,7 @@ export default function SubmitVerification() {
 
           {/* Supervisor Selection */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">
+            <label className="form-label">
               <FaUser className="me-2 text-secondary" /> Send To (Supervisor)
             </label>
             <select
@@ -130,7 +130,7 @@ export default function SubmitVerification() {
 
           {/* Message */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">Message (Optional)</label>
+            <label className="form-label">Message (Optional)</label>
             <textarea
               className="form-control border-0 border-bottom bg-transparent subtle-border"
               rows="4"
