@@ -10,3 +10,85 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+Here is our final ideal view
+```
+src/
+├── app/
+│   ├── App.jsx                # Root component (routing only)
+│   ├── router.jsx             # Routes definition (CLEAN)
+│
+├── core/                      # App-wide singletons (Angular CoreModule)
+│   ├── auth/
+│   │   ├── auth.service.ts
+│   │   ├── auth.context.tsx
+│   │   └── ProtectedRoute.tsx
+│   │
+│   ├── http/
+│   │   └── apiClient.ts       # Axios / fetch wrapper
+│   │
+│   ├── guards/
+│   │   └── AuthGuard.tsx
+│   │
+│   └── config/
+│       └── env.ts
+│
+├── shared/                    # Reusable UI (Angular SharedModule)
+│   ├── components/
+│   │   ├── Header/
+│   │   ├── Footer/
+│   │   ├── Sidebar/
+│   │   └── Loader/
+│   │
+│   ├── layouts/
+│   │   ├── AuthLayout.tsx
+│   │   └── DashboardLayout.tsx
+│   │
+│   └── ui/
+│       ├── Button.tsx
+│       ├── Modal.tsx
+│       └── Table.tsx
+│
+├── features/                  # Business domains (MOST IMPORTANT)
+│   ├── auth/
+│   │   ├── pages/
+│   │   │   ├── Login.tsx
+│   │   │   ├── Register.tsx
+│   │   │   └── ChangePassword.tsx
+│   │   ├── services/
+│   │   │   └── auth.api.ts
+│   │   └── index.ts
+│   │
+│   ├── users/
+│   │   ├── pages/
+│   │   │   ├── UserList.tsx
+│   │   │   ├── AddUser.tsx
+│   │   │   ├── UserDetail.tsx
+│   │   ├── services/
+│   │   │   └── users.api.ts
+│   │
+│   ├── visits/
+│   │   ├── pages/
+│   │   ├── services/
+│   │
+│   ├── sales/
+│   │   ├── pages/
+│   │   ├── services/
+│   │
+│   └── verifications/
+│       ├── pages/
+│       ├── services/
+│
+├── styles/
+│   ├── main.scss              # Global styles
+│   ├── variables.scss
+│   └── bootstrap.scss
+│
+├── assets/
+│   ├── images/
+│   └── icons/
+│
+├── index.tsx
+└── main.tsx
+
+```
